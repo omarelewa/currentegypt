@@ -52,7 +52,7 @@ nav.menu a:hover::after,nav.menu a.active::after{width:100%}
 .mobile-nav.open{display:block}
 
 .hero{position:relative;color:#fff;padding:98px 0 88px;overflow:hidden;background:var(--ink)}
-.hero-bg{position:absolute;inset:0;background:url('https://static.wixstatic.com/media/0b39bc_1992eaf9cf294cbf858db9ef2e2964fe~mv2.jpg/v1/fill/w_1920,h_1080,al_c,q_85,enc_avif,quality_auto/hero.jpg') center/cover no-repeat;animation:kenburns 24s ease-in-out infinite alternate;z-index:0}
+.hero-bg{position:absolute;inset:0;background:url('img/b4123c3741695611.avif') center/cover no-repeat;animation:kenburns 24s ease-in-out infinite alternate;z-index:0}
 .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,56,.72),rgba(20,16,56,.9));z-index:1}
 .hero .wrap{position:relative;z-index:2}
 @keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.12)}}
