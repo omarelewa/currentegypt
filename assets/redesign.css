@@ -218,7 +218,7 @@ a{text-decoration:none;color:inherit}
 @media(max-width:860px){.cta-inner{grid-template-columns:1fr;gap:32px}}
 
 /* ============ LEADERSHIP ============ */
-.lead-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.lead-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .person{display:block}
 .person:hover h4{color:var(--accent)}
 .person{text-align:center}
