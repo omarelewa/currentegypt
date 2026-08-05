@@ -423,3 +423,176 @@ footer .col a:hover{color:#fff}
 
 /* keep phone numbers and emails left-to-right inside RTL pages */
 [dir="rtl"] a[href^="tel:"],[dir="rtl"] a[href^="mailto:"],[dir="rtl"] .hdr-phone,[dir="rtl"] .mnav-contact,[dir="rtl"] .util .g a{direction:ltr;unicode-bidi:isolate}
+
+/* ============ V2 ENHANCEMENTS — motion system + conversion UI ============ */
+:root{
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-back:cubic-bezier(.34,1.56,.64,1);
+  --cobalt:#3B6FE0;
+}
+
+/* --- reveal tiers (batch stagger via --d, set/cleared by site.js) --- */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease-out) var(--d,0ms),transform .5s var(--ease-out) var(--d,0ms)}
+.reveal.in{opacity:1;transform:none}
+.svc.reveal,.proj.reveal,.cul.reveal,.office-card.reveal,.cta-card.reveal{transform:translateY(18px);transition-duration:.65s}
+.svc.reveal.in,.proj.reveal.in,.cul.reveal.in,.office-card.reveal.in,.cta-card.reveal.in{transform:none}
+.lead-img.reveal img{transform:scale(1.05);transition:transform .9s var(--ease-out)}
+.lead-img.reveal.in img{transform:none}
+
+/* --- hero load orchestration (CSS-only, ends visible without JS) --- */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes riseIn{from{transform:translateY(14px)}to{transform:none}}
+@keyframes heroSettle{from{transform:scale(1.045)}to{transform:none}}
+.hero-media img{animation:heroSettle 4.5s var(--ease-out) both}
+.hero .wrap > .eyebrow{animation:fadeUp .7s var(--ease-out) both}
+.hero .wrap h1{animation:fadeUp .7s var(--ease-out) .09s both}
+.hero .wrap .lead{animation:fadeUp .7s var(--ease-out) .18s both}
+.hero .wrap .hero-cta{animation:fadeUp .7s var(--ease-out) .27s both}
+.hero .wrap .hero-stats{animation:fadeUp .7s var(--ease-out) .36s both}
+.page-hero .crumb,.page-hero .kicker{animation:fadeUp .6s var(--ease-out) both}
+.page-hero h1{animation:riseIn .6s var(--ease-out) .08s both}
+.page-hero .wrap > p{animation:fadeUp .6s var(--ease-out) .16s both}
+
+/* --- scroll-linked drift on the blueprint grid layers (progressive) --- */
+@keyframes gridDrift{to{transform:translateY(-4%)}}
+@supports (animation-timeline: scroll()){
+  @media (prefers-reduced-motion: no-preference){
+    .hero-grid{animation:gridDrift linear both;animation-timeline:scroll();animation-range:0 90vh}
+    .page-hero::before{animation:gridDrift linear both;animation-timeline:scroll();animation-range:0 60vh}
+  }
+}
+
+/* --- counters + stat bars --- */
+.stat .num,.hstat b{font-variant-numeric:tabular-nums}
+.js .stat .bar{transform:scaleX(0);transform-origin:left}
+[dir="rtl"] .js .stat .bar,[dir="rtl"] .stat .bar{transform-origin:right}
+.stat.reveal.in .bar{transform:scaleX(1);transition:transform .6s var(--ease-out) .9s}
+
+/* --- steps + journey timeline choreography --- */
+.js .steps .step,.js .jtl .jt{opacity:0;transform:translateY(12px)}
+.steps.in .step,.jtl.in .jt{opacity:1;transform:none;transition:opacity .55s var(--ease-out),transform .55s var(--ease-out)}
+.steps.in .step:nth-child(2),.jtl.in .jt:nth-child(2){transition-delay:.1s}
+.steps.in .step:nth-child(3),.jtl.in .jt:nth-child(3){transition-delay:.2s}
+.steps.in .step:nth-child(4),.jtl.in .jt:nth-child(4){transition-delay:.3s}
+.steps.in .step:nth-child(5),.jtl.in .jt:nth-child(5){transition-delay:.4s}
+.js .steps .step::before,.js .jtl .jt::before{transform:scale(0)}
+.steps.in .step::before,.jtl.in .jt::before{transform:scale(1);transition:transform .3s var(--ease-back)}
+.steps.in .step:nth-child(2)::before,.jtl.in .jt:nth-child(2)::before{transition-delay:.15s}
+.steps.in .step:nth-child(3)::before,.jtl.in .jt:nth-child(3)::before{transition-delay:.3s}
+.steps.in .step:nth-child(4)::before,.jtl.in .jt:nth-child(4)::before{transition-delay:.45s}
+.steps.in .step:nth-child(5)::before,.jtl.in .jt:nth-child(5)::before{transition-delay:.6s}
+
+/* --- unified card hover --- */
+.svc .im img{transition:transform .5s var(--ease)}
+.svc:hover .im img{transform:scale(1.04)}
+.proj img{transition:transform .5s var(--ease)}
+.proj:hover img{transform:scale(1.04)}
+.proj .info{transition:transform .4s var(--ease)}
+.proj:hover .info{transform:translateY(-4px)}
+.proj .arrow{right:auto;inset-inline-end:20px;opacity:0;transform:translate(-4px,6px);transition:.3s var(--ease-back) 60ms}
+[dir="rtl"] .proj .arrow{transform:translate(4px,6px)}
+.proj:hover .arrow{opacity:1;transform:none}
+@media (hover:none){.proj .arrow{opacity:.9;transform:none}}
+
+/* --- pressed state + focus visibility everywhere --- */
+.btn:active{transform:translateY(1px) scale(.985);transition-duration:80ms}
+.btn:focus-visible,.menu a:focus-visible,.fbtn:focus-visible,.mbar a:focus-visible,
+.gallery img:focus-visible,.lang a:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+
+/* --- mobile nav cascade --- */
+.mnav{transition:transform .42s var(--ease),visibility 0s .42s}
+.mnav.open{transition:transform .42s var(--ease),visibility 0s 0s}
+[dir="rtl"] .mnav{transform:translateX(-100%)}
+[dir="rtl"] .mnav.open{transform:none}
+.mnav-links a{opacity:0;transform:translateX(28px)}
+[dir="rtl"] .mnav-links a{transform:translateX(-28px)}
+.mnav.open .mnav-links a{opacity:1;transform:none;transition:opacity .5s var(--ease-out),transform .5s var(--ease-out)}
+.mnav.open .mnav-links a:nth-child(1){transition-delay:.14s}
+.mnav.open .mnav-links a:nth-child(2){transition-delay:.185s}
+.mnav.open .mnav-links a:nth-child(3){transition-delay:.23s}
+.mnav.open .mnav-links a:nth-child(4){transition-delay:.275s}
+.mnav.open .mnav-links a:nth-child(5){transition-delay:.32s}
+.mnav.open .mnav-links a:nth-child(6){transition-delay:.365s}
+.mnav.open .mnav-links a:nth-child(7){transition-delay:.41s}
+.mnav .mnav-foot{opacity:0;transform:translateY(14px)}
+.mnav.open .mnav-foot{opacity:1;transform:none;transition:opacity .5s var(--ease-out) .4s,transform .5s var(--ease-out) .4s}
+
+/* --- sticky mobile bar: WhatsApp-first, entrance, tuck near form --- */
+.mbar a.wa{background:#25D366;color:#fff}
+.mbar a.wa svg{color:#fff}
+.mbar a.q{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+.mbar a b{display:flex;align-items:center;justify-content:center;height:19px}
+.js .mbar{transform:translateY(110%)}
+.js .mbar.on{transform:none;transition:transform .45s var(--ease-out)}
+.js .mbar.on.tuck{transform:translateY(110%)}
+@media(max-width:1000px){
+  .wa-float{display:none}
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+}
+
+/* --- WhatsApp float: one-time attention ring --- */
+.wa-float::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #25D366;opacity:0;animation:waRing 1.1s ease-out 6s 2}
+@keyframes waRing{0%{transform:scale(1);opacity:.45}100%{transform:scale(1.55);opacity:0}}
+
+/* --- lightbox: fade instead of teleport --- */
+.lightbox{display:flex;opacity:0;visibility:hidden;transition:opacity .25s var(--ease-out),visibility 0s .25s}
+.lightbox.open{opacity:1;visibility:visible;transition:opacity .25s var(--ease-out),visibility 0s 0s}
+.lightbox img{transform:scale(.96);transition:transform .3s var(--ease-out)}
+.lightbox.open img{transform:none}
+.lightbox .x{right:auto;inset-inline-end:26px}
+
+/* --- projects filter: card morph via View Transitions --- */
+::view-transition-group(*){animation-duration:.28s;animation-timing-function:var(--ease-out)}
+
+/* --- quote form states --- */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.form-ok{text-align:center;padding:26px 8px;animation:fadeUp .45s var(--ease-out) both}
+.form-ok .tick{width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.form-ok h4{font-size:20px;margin-bottom:8px}
+.form-ok p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+.form-ok .btn{width:auto;display:inline-flex}
+.form-err{display:none;background:#FDECEC;color:#8A1F1F;border:1px solid #F2C4C4;border-radius:10px;padding:10px 12px;font-size:13.5px;margin-top:10px}
+.form-err.show{display:block}
+.field label .opt{color:var(--muted-2);font-weight:500}
+.q-note{color:var(--muted-2);font-size:12.5px;text-align:center;margin:-2px 0 10px}
+
+/* --- form usability on phones (kills iOS focus zoom) --- */
+@media(max-width:1000px){.field input,.field select,.field textarea{font-size:16px}}
+[dir="rtl"] input[type="tel"],[dir="rtl"] input[type="email"]{direction:ltr;text-align:right}
+
+/* --- inline SVG icons in text/buttons --- */
+.ic{display:inline-block;vertical-align:-2px;flex-shrink:0}
+.btn .ic{vertical-align:middle}
+
+/* --- language toggle: reachable on phones --- */
+.lang a,.lang span{padding:6px 11px}
+.mnav-lang{letter-spacing:.02em}
+
+/* --- RTL logical-property fixes --- */
+[dir="rtl"] .hstat + .hstat{padding-left:0;border-left:0;padding-right:14px;border-right:1px solid rgba(255,255,255,.12)}
+[dir="rtl"] .inc li{padding-left:0;padding-right:30px}
+[dir="rtl"] .inc li::before{left:auto;right:0}
+[dir="rtl"] .jtl::before{left:auto;right:9px}
+[dir="rtl"] .jtl .jt{padding:0 44px 34px 0}
+[dir="rtl"] .jtl .jt:last-child{padding-bottom:0}
+[dir="rtl"] .jtl .jt::before{left:auto;right:2px}
+@media(min-width:860px){
+  [dir="rtl"] .jtl::before{right:8px;left:8px}
+  [dir="rtl"] .jtl .jt{padding:34px 0 0 22px}
+  [dir="rtl"] .jtl .jt::before{right:0;left:auto}
+}
+[dir="rtl"] .facts li b{text-align:left}
+
+/* --- consolidated reduced-motion contract --- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;animation-delay:0ms!important;transition-delay:0ms!important}
+  html{scroll-behavior:auto}
+  .reveal,.js .steps .step,.js .jtl .jt,.js .stat .bar{opacity:1;transform:none}
+  .js .steps .step::before,.js .jtl .jt::before{transform:none}
+  .lead-img.reveal img,.hero-media img{transform:none;animation:none}
+  .js .mbar{transform:none}
+  .mnav-links a,.mnav .mnav-foot{opacity:1;transform:none}
+}
+.mnav .mnav-lang{color:#fff;border-color:rgba(255,255,255,.4)}
+.mnav .mnav-lang:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.08)}
