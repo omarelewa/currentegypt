@@ -618,3 +618,14 @@ footer .col a:hover{color:#fff}
 .cta-strip h2{color:#fff;font-size:clamp(26px,3.4vw,40px);letter-spacing:-.03em;max-width:22ch}
 .cta-strip p{color:var(--on-navy);font-size:17px;margin-top:14px;max-width:56ch}
 .cta-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+
+/* --- The Numbers Are The Argument -----------------------------------------
+   Quantities inside prose get display treatment instead of body treatment:
+   Manrope, tabular figures, Ink Navy so they step forward from Graphite copy.
+   Number and unit never break across lines. */
+.fig{font-family:Manrope,sans-serif;font-weight:700;font-size:1.05em;letter-spacing:-.01em;
+  color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* on navy grounds the same figure has to invert, or it renders near-black on navy */
+.hero .fig,.page-hero .fig,.approach .fig,.cta .fig,.cta-strip .fig,.vm .fig{color:#fff}
+/* Manrope carries no Arabic, so RTL keeps the Arabic face and leans on weight instead */
+[dir="rtl"] .fig{font-family:'IBM Plex Sans Arabic','Cairo',system-ui,sans-serif;letter-spacing:0}
