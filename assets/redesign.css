@@ -7,7 +7,7 @@
   --line:rgba(16,20,50,.10);
   --line-2:rgba(16,20,50,.16);
   --muted:#5A5F76;          /* muted body */
-  --muted-2:#8A8FA3;
+  --muted-2:#696D7C;      /* darkened for WCAG AA: 4.64:1 on tracing paper */
   --accent:#5C6473;         /* Structural Slate */
   --accent-tint:#EFEFF1;
   --silver:#C3C8D2;         /* light grey accent for dark backgrounds */
@@ -166,7 +166,7 @@ a{text-decoration:none;color:inherit}
 .step{padding:26px 20px 0;border-top:2px solid rgba(255,255,255,.14);position:relative}
 .step::before{content:"";position:absolute;top:-6px;left:0;width:10px;height:10px;border-radius:50%;background:var(--silver);box-shadow:0 0 0 4px rgba(195,200,210,.18)}
 .step .n{font-family:Manrope;font-weight:700;font-size:12px;letter-spacing:.14em;color:var(--silver);text-transform:uppercase}
-.step h4{color:#fff;font-size:18px;margin:10px 0 8px}
+.step h3{color:#fff;font-size:18px;margin:10px 0 8px}
 .step p{color:var(--on-navy-mute);font-size:14px}
 @media(max-width:900px){.steps{grid-template-columns:1fr 1fr}.step{padding-bottom:8px}}
 @media(max-width:520px){.steps{grid-template-columns:1fr}}
@@ -219,13 +219,13 @@ a{text-decoration:none;color:inherit}
 /* ============ LEADERSHIP ============ */
 .lead-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .person{display:block}
-.person:hover h4{color:var(--accent)}
+.person:hover h3{color:var(--accent)}
 .person{text-align:center}
 .person .im{aspect-ratio:1;border-radius:var(--r-surface);overflow:hidden;background:var(--paper-2);margin-bottom:14px;position:relative}
 .person .im img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.02);transition:.4s}
 .person:hover .im img{filter:none}
 .person .im::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(20,24,60,.24));mix-blend-mode:multiply;opacity:.5}
-.person h4{font-size:15.5px}
+.person h3{font-size:15.5px}
 .person span{color:var(--accent);font-size:13px;font-weight:500;font-family:Manrope}
 @media(max-width:900px){.lead-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){.lead-grid{grid-template-columns:1fr 1fr}}
@@ -245,7 +245,7 @@ footer{background:var(--ink);color:var(--on-navy-mute);padding:70px 0 0}
 .foot-brand .name{font-family:Manrope;font-weight:800;font-size:26px;color:#fff;letter-spacing:.04em}
 .foot-logo{height:62px;width:auto;filter:brightness(0) invert(1);opacity:.96}
 .foot-brand p{margin:16px 0 22px;font-size:14px;max-width:34ch;color:var(--on-navy-mute)}
-footer h5{color:#fff;font-family:Manrope;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
+footer h2{color:#fff;font-family:Manrope;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
 footer .col a{display:block;color:var(--on-navy-mute);font-size:14px;padding:5px 0;transition:.2s}
 footer .col a:hover{color:#fff}
 .office{font-size:13.5px;line-height:1.7;margin-bottom:16px}
@@ -296,7 +296,7 @@ footer .col a:hover{color:#fff}
 
 /* aside spec card */
 .aside{background:#fff;border:1px solid var(--line);border-radius:var(--r-surface);padding:26px;position:sticky;top:96px}
-.aside h4{font-size:18px;margin-bottom:8px}
+.aside h3{font-size:18px;margin-bottom:8px}
 .aside > p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
 .aside .btn{width:100%;justify-content:center;margin-bottom:10px}
 .facts{list-style:none;margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
@@ -337,7 +337,7 @@ footer .col a:hover{color:#fff}
 /* contact offices */
 .offices-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto}
 .office-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-surface);padding:28px}
-.office-card h4{font-size:19px;margin-bottom:6px}
+.office-card h3{font-size:19px;margin-bottom:6px}
 .office-card .addr{color:var(--muted);font-size:14.5px;margin-bottom:16px}
 @media(max-width:640px){.offices-grid{grid-template-columns:1fr}}
 
@@ -548,7 +548,7 @@ footer .col a:hover{color:#fff}
 @keyframes spin{to{transform:rotate(360deg)}}
 .form-ok{text-align:center;padding:26px 8px;animation:fadeUp .45s var(--ease-out) both}
 .form-ok .tick{width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
-.form-ok h4{font-size:20px;margin-bottom:8px}
+.form-ok h3{font-size:20px;margin-bottom:8px}
 .form-ok p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
 .form-ok .btn{width:auto;display:inline-flex}
 .form-err{display:none;background:#FDECEC;color:#8A1F1F;border:1px solid #F2C4C4;border-radius:var(--r-control);padding:10px 12px;font-size:13.5px;margin-top:10px}
@@ -605,7 +605,7 @@ footer .col a:hover{color:#fff}
 .sec:not(.approach) .step{border-top-color:var(--line-2)}
 .sec:not(.approach) .step::before{background:var(--accent);box-shadow:0 0 0 4px var(--accent-tint)}
 .sec:not(.approach) .step .n{color:var(--accent)}
-.sec:not(.approach) .step h4{color:var(--ink)}
+.sec:not(.approach) .step h3{color:var(--ink)}
 .sec:not(.approach) .step p{color:var(--muted)}
 
 /* --- careers closing band: was an unstyled section, so its ghost button sat at 1.1:1.
@@ -629,3 +629,22 @@ footer .col a:hover{color:#fff}
 .hero .fig,.page-hero .fig,.approach .fig,.cta .fig,.cta-strip .fig,.vm .fig{color:#fff}
 /* Manrope carries no Arabic, so RTL keeps the Arabic face and leans on weight instead */
 [dir="rtl"] .fig{font-family:'IBM Plex Sans Arabic','Cairo',system-ui,sans-serif;letter-spacing:0}
+
+/* --- accessibility: skip link (WCAG 2.4.1 Bypass Blocks) -------------------
+   Off-screen until focused, then lands as a solid ink chip over the utility
+   bar. Uses inset-inline-start so it mirrors correctly in Arabic. */
+.skip{position:absolute;inset-inline-start:-9999px;top:0;z-index:100;
+  background:var(--ink);color:#fff;font-family:Manrope,sans-serif;font-weight:700;
+  font-size:14px;padding:12px 20px;border-radius:0 0 var(--r-control) var(--r-control);
+  text-decoration:none}
+.skip:focus{inset-inline-start:12px}
+.skip:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+/* main is the skip target, so give it a focus ring-free landing */
+main:focus{outline:none}
+
+/* --- visually-hidden utility -----------------------------------------------
+   For headings that structure the document for assistive tech without adding
+   a visual title the design does not want (the projects and services indexes
+   go straight from h1 to their card grids). */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
