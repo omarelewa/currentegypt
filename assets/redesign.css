@@ -102,7 +102,6 @@ a{text-decoration:none;color:inherit}
 .brand{display:flex;align-items:center;gap:11px;font-family:Manrope;font-weight:800;font-size:21px;letter-spacing:.02em;color:var(--ink)}
 .brand img{height:46px;width:auto;display:block;transform-origin:left center;transition:transform .3s var(--ease-out)}
 .mnav-top .brand img{height:40px;filter:brightness(0) invert(1)}
-.brand .mark{width:34px;height:34px;border-radius:var(--r-control);background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px}
 .menu{display:flex;gap:4px}
 .menu a{font-family:Manrope;font-weight:600;font-size:14.5px;color:#2B2F49;padding:9px 14px;border-radius:var(--r-control);position:relative;transition:.2s}
 .menu a:hover{color:var(--accent);background:var(--accent-tint)}
@@ -119,7 +118,7 @@ a{text-decoration:none;color:inherit}
 .mnav.open{transform:none;visibility:visible}
 .mnav-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
 .mnav-top .brand{color:#fff}
-.mnav-close{width:44px;height:44px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r-control);background:transparent;color:#fff;font-size:22px;cursor:pointer}
+.mnav-close{font-family:Manrope,sans-serif;width:44px;height:44px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r-control);background:transparent;color:#fff;font-size:22px;cursor:pointer}
 .mnav-links{display:flex;flex-direction:column}
 .mnav-links a{font-family:Manrope;font-weight:700;font-size:23px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:baseline;gap:14px;color:#fff}
 .mnav-links a span{color:var(--on-navy-mute);font-size:13.5px;font-weight:500;flex-shrink:0;white-space:nowrap}
@@ -429,7 +428,6 @@ footer .col a:hover{color:#fff}
 .fbtn:hover{border-color:var(--accent);color:var(--accent)}
 .fbtn.active{background:var(--ink);border-color:var(--ink);color:#fff}
 .proj.hide{display:none}
-.proj .spec{color:var(--silver);font-family:Manrope;font-weight:600;font-size:12px;margin-top:4px;font-variant-numeric:tabular-nums}
 
 /* ============ ARABIC / RTL ============ */
 [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] textarea,[dir="rtl"] select,[dir="rtl"] button,
@@ -772,7 +770,7 @@ main:focus{outline:none}
   #pgrid .proj::after{display:none!important}
   #pgrid .proj img{position:static!important;height:38mm!important;object-fit:cover}
   #pgrid .proj .info{position:static!important;padding:4mm!important;width:auto!important}
-  #pgrid .proj h3,#pgrid .proj .loc,#pgrid .proj .spec{color:#000!important}
+  #pgrid .proj h3,#pgrid .proj .loc{color:#000!important}
   #pgrid .proj .tag{background:none!important;color:#000!important;padding:0!important;
     border:0!important;font-size:8pt!important}
 

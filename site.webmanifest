@@ -1,0 +1,17 @@
+{
+  "name": "Current, for construction supply",
+  "short_name": "Current",
+  "description": "EPC construction contractor delivering civil, structural and electromechanical works across Egypt, Saudi Arabia and Libya.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "lang": "en",
+  "dir": "ltr",
+  "theme_color": "#0C0F26",
+  "background_color": "#FBFAF8",
+  "icons": [
+    { "src": "/favicon-32.png",       "sizes": "32x32",   "type": "image/png" },
+    { "src": "/favicon-64.png",       "sizes": "64x64",   "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
