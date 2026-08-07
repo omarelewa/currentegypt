@@ -675,3 +675,110 @@ main:focus{outline:none}
    go straight from h1 to their card grids). */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
   overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* ============ PRINT =========================================================
+   Tender and prequalification reviewers print project and service pages into
+   bid files, so a printed page has to work as a standalone spec sheet.
+
+   The critical rule is the first one. Scroll-reveal leaves elements at
+   opacity:0 until the observer fires, and printing captures the current DOM
+   state, so a visitor who hits Cmd+P without scrolling would otherwise print
+   half-empty pages. Everything is forced visible before anything else. */
+@media print{
+  .reveal,.reveal.in,
+  .js .steps .step,.js .jtl .jt,.js .stat .bar,
+  .steps.in .step::before,.jtl.in .jt::before,
+  .lead-img.reveal img,.hero-media img,
+  .page-hero .crumb,.page-hero .kicker,.page-hero h1,.page-hero .wrap>p,
+  .hero .wrap>*{
+    opacity:1!important;transform:none!important;animation:none!important;
+    transition:none!important;visibility:visible!important}
+
+  /* chrome, navigation and conversion UI carry nothing onto paper */
+  .util,.hdr,.mnav,.mbar,.wa-float,.skip,.lightbox,.burger,
+  .filters,.hero-cta,.cta-actions,.q-alt,.qsteps,.svc-more-row,
+  .proj .arrow,.careers,.cta,form,.form-err,.q-note,
+  .foot-grid .col,.foot-bottom,.hero-grid,.page-hero::before,.page-hero::after{
+    display:none!important}
+
+  /* ink economy: every full-bleed navy block becomes paper */
+  html,body,.hero,.page-hero,.approach,footer,.vm,.sec,.trust{
+    background:#fff!important;color:#000!important}
+  .hero h1,.page-hero h1,.approach h2,.approach h3,.approach h4,footer h2,
+  .hero .lead,.page-hero p,.step h3,.step p,.vm p,.foot-brand p,
+  .crumb,.kicker,.eyebrow,.hstat b,.hstat span{
+    color:#000!important;-webkit-text-fill-color:#000!important}
+  .hero-media,.hero-media::after{display:none!important}
+  .hero,.page-hero{padding:0!important}
+  .hero .wrap,.page-hero .wrap{padding-top:0!important;padding-bottom:10pt!important}
+  .page-hero h1{margin-top:2pt!important}
+
+  /* the spec aside is the whole point of a printed project sheet */
+  .detail{display:block!important}
+  .aside{position:static!important;border:1px solid #000!important;
+    box-shadow:none!important;margin-top:14pt;break-inside:avoid}
+  .facts li{border-bottom:1px solid #999!important}
+  .facts li span{color:#333!important}
+
+  /* readable on paper */
+  body{font-size:10.5pt;line-height:1.45}
+  .detail p,.detail li,.csr .box p,.inc li,.sec-head p,p{color:#1a1a1a!important}
+  .detail p,.detail li{font-size:10.5pt}
+  .facts li b,.facts li{color:#000!important}
+  h1{font-size:22pt!important;line-height:1.15!important}
+  h2{font-size:15pt!important}
+  h3{font-size:12pt!important}
+  .stat .num,.hstat b{font-size:20pt!important}
+  .wrap{max-width:none!important;padding:0!important}
+  .sec{padding:8pt 0!important}
+  .sec-head{margin-bottom:10pt!important}
+  .lead-img{margin-bottom:8pt!important}
+
+  /* keep related units together, never orphan a heading */
+  .aside,.csr .box,.gallery img,.lead-img,figure,.stat,.step,.jt{break-inside:avoid}
+  h1,h2,h3{break-after:avoid}
+  p{orphans:3;widows:3}
+
+  /* images: present but never dominating the sheet */
+  .lead-img{aspect-ratio:auto!important;max-height:78mm}
+  .lead-img img{max-height:78mm;object-fit:contain!important}
+  .gallery{grid-template-columns:repeat(3,1fr)!important;gap:4mm!important}
+  .gallery img{aspect-ratio:4/3;max-height:44mm}
+  .fig{color:#000!important}
+
+  /* a printed sheet must say what it is and where it came from */
+  main::before{content:"Current  \00B7  for construction supply  \00B7  currentegypt.com";
+    display:block;font-family:Manrope,sans-serif;font-weight:700;font-size:9pt;
+    letter-spacing:.08em;text-transform:uppercase;color:#000;
+    border-bottom:1.5pt solid #000;padding-bottom:6pt;margin-bottom:12pt}
+  main::after{content:"admin@currentegypt.com  \00B7  +20 106 966 8444  \00B7  Cairo, Egypt  \00B7  Riyadh, KSA";
+    display:block;font-size:9pt;color:#000;border-top:1pt solid #000;
+    padding-top:6pt;margin-top:14pt}
+  /* prose links stay actionable off-screen */
+  .detail a[href^="http"]::after{content:" (" attr(href) ")";font-size:8.5pt;color:#333;word-break:break-all}
+
+  /* Related-work grids are navigation, not content, on a printed spec sheet.
+     The projects index keeps its grid (id=pgrid): a printed project list is
+     genuinely useful to a reviewer. */
+  .proj-grid:not(#pgrid){display:none!important}
+  section:has(.proj-grid:not(#pgrid)){display:none!important}
+
+  /* Project cards put white text over a photo behind a CSS-gradient scrim.
+     Browsers do not print background gradients, so that text would land on a
+     bright photo and vanish. On paper the card becomes a plain ruled entry. */
+  #pgrid{grid-template-columns:1fr 1fr!important;gap:5mm!important}
+  #pgrid .proj{aspect-ratio:auto!important;background:#fff!important;
+    border:1px solid #000!important;border-radius:0!important;break-inside:avoid}
+  #pgrid .proj::after{display:none!important}
+  #pgrid .proj img{position:static!important;height:38mm!important;object-fit:cover}
+  #pgrid .proj .info{position:static!important;padding:4mm!important;width:auto!important}
+  #pgrid .proj h3,#pgrid .proj .loc,#pgrid .proj .spec{color:#000!important}
+  #pgrid .proj .tag{background:none!important;color:#000!important;padding:0!important;
+    border:0!important;font-size:8pt!important}
+
+  /* the sheet identifies itself in the reader's own language */
+  [dir="rtl"] main::before{content:"Current  \00B7  \0645\0642\0627\0648\0644\0627\062A \0648\0625\0646\0634\0627\0621\0627\062A  \00B7  currentegypt.com"}
+  [dir="rtl"] main::after{content:"admin@currentegypt.com  \00B7  +20 106 966 8444  \00B7  \0627\0644\0642\0627\0647\0631\0629\060C \0645\0635\0631  \00B7  \0627\0644\0631\064A\0627\0636\060C \0627\0644\0633\0639\0648\062F\064A\0629"}
+
+  @page{margin:16mm 14mm}
+}
