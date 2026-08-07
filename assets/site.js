@@ -62,7 +62,13 @@
     mnav.setAttribute('aria-modal', 'true');
     burger.onclick = navOpen;
   }
-  if (mclose) mclose.onclick = navClose;
+  if (mclose) {
+    /* its only content is a bare multiplication sign, which screen readers
+       announce as a symbol or skip. Named the same way the lightbox close is. */
+    mclose.setAttribute('aria-label', AR ? 'إغلاق القائمة' : 'Close menu');
+    mclose.innerHTML = '<span aria-hidden="true">&#10005;</span>';
+    mclose.onclick = navClose;
+  }
   if (mnav) mnav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', navClose); });
 
   /* ---------- reveal on scroll (batch-scoped stagger) ---------- */
