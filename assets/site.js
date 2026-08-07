@@ -164,7 +164,9 @@
   /* ---------- lightbox (keyboard accessible) ---------- */
   var lb = doc.querySelector('.lightbox');
   if (lb) {
+    /* the image is created here, not shipped as an empty <img> in markup */
     var lbi = lb.querySelector('img');
+    if (!lbi) { lbi = doc.createElement('img'); lbi.alt = ''; lb.appendChild(lbi); }
     var lastTrigger = null;
     lb.setAttribute('role', 'dialog');
     lb.setAttribute('aria-modal', 'true');
@@ -174,6 +176,7 @@
     function lbOpen(g) {
       lastTrigger = g;
       lbi.src = g.dataset.full || g.src;
+      lbi.alt = g.alt || '';
       lb.classList.add('open');
       if (lbx) lbx.focus();
     }
