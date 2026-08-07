@@ -283,25 +283,41 @@
       var waHref = 'https://wa.me/201069668444?text=' + encodeURIComponent(
         (AR ? 'مرحبًا Current، أرسلت للتو طلب عرض سعر عبر الموقع باسم ' : 'Hello Current, I just sent a quote request via your website for ') +
         (fd.get('company') || fd.get('name') || ''));
-      function succeed() {
-        track('quote_submit', { page: location.pathname });
+      /* h3, not h4: the card sits under an h3, and .form-ok is styled on h3 */
+      function panel(title, body, extraHref, extraLabel, extraClass) {
         var card = f.closest('.cta-card') || f;
         card.innerHTML =
-          '<div class="form-ok"><div class="tick">&#10003;</div><h4>' + okTitle + '</h4><p>' + okBody + '</p>' +
-          '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + waHref + '">' + okWa + '</a></div>';
+          '<div class="form-ok"><div class="tick">&#10003;</div><h3>' + title + '</h3><p>' + body + '</p>' +
+          '<a class="btn ' + extraClass + '" target="_blank" rel="noopener" href="' + extraHref + '">' + extraLabel + '</a>' +
+          '<p class="fine"><a href="' + waHref + '" target="_blank" rel="noopener">' + okWa + '</a></p></div>';
       }
       if (QUOTE_ENDPOINT) {
         if (btn) { btn.disabled = true; btn.setAttribute('data-label', btn.textContent); btn.innerHTML = '<span class="spin"></span>'; }
         fetch(QUOTE_ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } })
-          .then(function (r) { if (r.ok) succeed(); else throw new Error('send failed'); })
+          .then(function (r) {
+            if (!r.ok) throw new Error('send failed');
+            track('quote_submit', { page: location.pathname });
+            panel(okTitle, okBody, waHref, okWa, 'btn-wa');
+          })
           .catch(function () {
             if (btn) { btn.disabled = false; btn.textContent = btn.getAttribute('data-label') || 'Send'; }
             if (err) err.classList.add('show');
           });
       } else {
-        /* no endpoint yet: open the visitor's email app, honestly labelled */
-        location.href = buildMailto(fd);
-        succeed();
+        /* No endpoint yet, so this only OPENS the visitor's email app. Nothing
+           has reached us until they press send, and saying "inquiry received"
+           here would be untrue. The panel says what actually happened and keeps
+           the mailto link so they can reopen it if the app never appeared. */
+        var mail = buildMailto(fd);
+        track('quote_mailto_opened', { page: location.pathname });
+        location.href = mail;
+        panel(
+          f.getAttribute('data-mail-title') || 'Almost there. Send the email.',
+          f.getAttribute('data-mail-body') || 'We opened your email app with your details filled in. Send that message and we will reply within one business day.',
+          mail,
+          f.getAttribute('data-mail-retry') || 'Open my email app again',
+          'btn-primary'
+        );
       }
     });
   });
