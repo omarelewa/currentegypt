@@ -1183,3 +1183,55 @@ main:focus{outline:none}
 @media (prefers-reduced-motion: reduce){
   .js .mg-scope.in .mg-scope-key li{opacity:1}
 }
+
+/* ============ PROJECT SECTION DRAWINGS ======================================
+   A scaled section through what was actually built, drawn from the figures in
+   the project's own facts list. Unlike the ornament in phases 1 to 3 this one
+   carries information, so it is NOT aria-hidden: it has a caption, and the
+   caption is what a screen reader reads.
+
+   Scale is honest. Sidi Kerir is drawn at 16px to the metre, so the 20m span
+   is 320px, the 15m depth is 240px and the 60cm walls are 9.6px. Any other
+   project gets its own viewBox at its own scale.
+   ============================================================================ */
+.mg-section{margin:26px 0 8px}
+.mg-section svg{display:block;width:100%;height:auto;max-width:560px;margin-inline:auto}
+.mg-section figcaption{color:var(--muted);font-size:13.5px;line-height:1.5;
+  margin-top:12px;max-width:62ch}
+
+.sx-firm{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:square}
+.sx-ground{fill:none;stroke:var(--accent);stroke-width:1.6}
+.sx-sea{fill:none;stroke:var(--cobalt);stroke-width:1.2;opacity:.5}
+.sx-live{fill:none;stroke:var(--cobalt);stroke-width:2;stroke-linecap:round}
+.sx-live-f{fill:var(--cobalt)}
+.sx-water{fill:var(--cobalt);opacity:.1;stroke:none}
+.sx-dim{fill:none;stroke:var(--muted-2);stroke-width:1}
+.sx-dim text{font-family:Manrope,sans-serif;font-size:11px;font-weight:700;
+  fill:var(--muted-2);letter-spacing:.06em;stroke:none;direction:ltr}
+
+.js .mg-section [data-draw]{stroke-dasharray:1;stroke-dashoffset:1}
+.mg-section.in [data-draw="1"]{animation:mgDraw .7s var(--ease-out) both}
+.mg-section.in [data-draw="2"]{animation:mgDraw 1s var(--ease-out) .4s both}
+.mg-section.in [data-draw="3"]{animation:mgDraw .7s var(--ease-out) 1.2s both}
+.mg-section.in [data-draw="4"]{animation:mgDraw .9s var(--ease-out) 1.7s both}
+.mg-section.in [data-draw="5"]{animation:mgDraw .6s var(--ease-out) 2.5s both}
+.js .mg-section [data-pop]{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.3)}
+.mg-section.in [data-pop]{animation:mgPop .45s var(--ease-mark) 2.9s both}
+.js .mg-section [data-fade]{opacity:0}
+/* mgIn ends at opacity 1, which would override the .1 declared above and
+   flood the section with solid blue. The water gets its own keyframe that
+   ends where it should. */
+@keyframes sxWater{from{opacity:0}to{opacity:.12}}
+.mg-section.in .sx-water{animation:sxWater .9s var(--ease-out) 3.1s both}
+.mg-section.in .sx-dim{animation:mgIn .5s var(--ease-out) 3.3s both}
+.mg-section.in .sx-dim-late{animation:mgIn .5s var(--ease-out) 3.6s both}
+
+@media (prefers-reduced-motion: reduce){
+  .js .mg-section [data-draw]{stroke-dashoffset:0;animation:none}
+  .js .mg-section [data-pop],.js .mg-section [data-fade]{opacity:1;transform:none;animation:none}
+}
+@media print{
+  /* this one DOES print: it is part of the project record, not decoration */
+  .mg-section [data-draw]{stroke-dashoffset:0!important;animation:none!important}
+  .mg-section [data-pop],.mg-section [data-fade]{opacity:1!important;animation:none!important}
+}

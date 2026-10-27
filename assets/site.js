@@ -898,7 +898,17 @@
     });
   }
 
+  /* ---------- project section drawings ----------
+     Bespoke per project, so the markup lives in the page; this only reveals
+     it. It carries information rather than ornament, which is why the figure
+     keeps its caption in the accessibility tree. */
+  function sectionDrawing() {
+    var fig = doc.querySelector('.mg-section');
+    if (fig) onSeen(fig);
+  }
+
   accountability();
+  sectionDrawing();
   scaleComparator();
   isoScrub();
   commissioning();
