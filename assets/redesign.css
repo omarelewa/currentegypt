@@ -971,3 +971,94 @@ main:focus{outline:none}
   .mg-ink{stroke-dashoffset:0!important;animation:none!important}
   .jtl::before{transform:none!important}
 }
+
+/* ============ MOTION GRAPHICS, PHASE 2 ======================================
+   Phase 1 drew ornament. These four draw the facts the page already states,
+   so a reviewer reads evidence rather than decoration. Everything here is
+   injected by site.js from markup already present, is aria-hidden because
+   the fact is announced from the text beside it, and holds no number of its
+   own: the values arrive as custom properties set at runtime.
+   ============================================================================ */
+
+/* --- 1. programme bar: the project's span against the company's history --- */
+.mg-prog{margin-top:20px}
+.mg-prog-track{position:relative;height:3px;background:var(--line-2)}
+.mg-prog-track i{position:absolute;top:-2px;height:7px;background:var(--accent);
+  inset-inline-start:calc(var(--l) * 100%);width:calc(var(--w) * 100%);
+  transform:scaleX(0);transform-origin:left}
+[dir="rtl"] .mg-prog-track i{transform-origin:right}
+.mg-prog.in .mg-prog-track i{transform:none;transition:transform .8s var(--ease-out) .15s}
+.mg-prog-axis{display:flex;justify-content:space-between;margin-top:8px;
+  font-family:Manrope,sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;
+  color:var(--muted-2);font-variant-numeric:tabular-nums;direction:ltr}
+
+/* --- 2. portfolio diagram: 19 case studies across their sectors ----------- */
+/* The filter chips above are centred, so the chart is centred and capped
+   to match. Left at full container width the bars read as six full-bleed
+   rules rather than as a figure. */
+.mg-folio{display:grid;gap:10px;margin:6px auto 32px;max-width:640px;width:100%}
+.mg-folio-row{display:grid;grid-template-columns:minmax(96px,164px) 1fr 28px;
+  align-items:center;gap:12px}
+.mg-folio .k{font-family:Manrope,sans-serif;font-weight:600;font-size:12.5px;
+  color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[dir="rtl"] .mg-folio .k{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+.mg-folio .b{height:7px;background:var(--accent-tint);position:relative}
+.mg-folio .b i{position:absolute;inset-block:0;inset-inline-start:0;
+  width:calc(var(--w) * 100%);background:var(--accent);
+  transform:scaleX(0);transform-origin:left}
+[dir="rtl"] .mg-folio .b i{transform-origin:right}
+.mg-folio.in .b i{transform:none;transition:transform .7s var(--ease-out) var(--d,0ms)}
+.mg-folio .n{font-family:Manrope,sans-serif;font-weight:800;font-size:13px;
+  color:var(--ink);font-variant-numeric:tabular-nums;text-align:end;direction:ltr}
+@media(max-width:560px){
+  .mg-folio-row{grid-template-columns:minmax(80px,116px) 1fr 24px;gap:9px}
+  .mg-folio .k{font-size:11.5px}
+}
+
+/* --- 3. honest stat meters -----------------------------------------------
+   The existing rules scale .bar itself, which is right for the plain 56px
+   rule the counts keep. A meter must not scale as a whole, so it is excluded
+   from those and its fill is a child drawn to the real percentage. */
+.js .stat .bar.mg-meter{transform:none;width:100%;max-width:210px;height:5px;
+  background:var(--accent-tint);position:relative;overflow:hidden}
+.stat .bar.mg-meter::after{content:"";position:absolute;inset-block:0;
+  inset-inline-start:0;width:calc(var(--v) * 100%);background:var(--accent);
+  transform:scaleX(0);transform-origin:left}
+[dir="rtl"] .stat .bar.mg-meter::after{transform-origin:right}
+.stat.reveal.in .bar.mg-meter{transform:none}
+.stat.reveal.in .bar.mg-meter::after{transform:none;
+  transition:transform .9s var(--ease-out) 1.05s}
+
+/* --- 4. footer title block: the page closes the way a drawing does -------- */
+.mg-tblock{display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid rgba(255,255,255,.16);margin-bottom:34px;
+  opacity:0;animation:mgIn .7s var(--ease-out) .2s both}
+.mg-tblock .cell{padding:11px 14px;min-width:0}
+.mg-tblock .cell + .cell{border-inline-start:1px solid rgba(255,255,255,.16)}
+.mg-tblock .k{display:block;font-family:Manrope,sans-serif;font-weight:700;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--on-navy-mute);margin-bottom:5px}
+[dir="rtl"] .mg-tblock .k{letter-spacing:0;text-transform:none;
+  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+.mg-tblock b{display:block;font-family:Manrope,sans-serif;font-weight:600;
+  font-size:12.5px;color:var(--on-navy);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+[dir="rtl"] .mg-tblock b{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+@media(max-width:620px){
+  .mg-tblock{grid-template-columns:1fr}
+  .mg-tblock .cell + .cell{border-inline-start:0;
+    border-top:1px solid rgba(255,255,255,.16)}
+}
+
+/* --- phase 2 under reduced motion: present, finished, still -------------- */
+@media (prefers-reduced-motion: reduce){
+  .mg-prog-track i,.mg-folio .b i,.stat .bar.mg-meter::after{
+    transform:none;transition:none}
+  .mg-tblock{opacity:1;animation:none}
+}
+
+/* --- phase 2 in print: the facts print, the drawings do not -------------- */
+@media print{
+  .mg-prog,.mg-folio,.mg-tblock{display:none!important}
+  .stat .bar.mg-meter::after{transform:none!important}
+}

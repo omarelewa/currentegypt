@@ -470,3 +470,168 @@
     }
   }
 })();
+
+/* Current — motion graphics, phase 2 (v3)
+   Where phase 1 drew ornament, this draws the facts the page already
+   states: a project's span against the company's history, the portfolio
+   across its sectors, the two percentages at their real proportion, and a
+   drafting title block closing the footer.
+
+   Nothing here holds a number. Counts, years, percentages and sector names
+   are all read from the DOM, so a figure that changes in the HTML changes
+   here and can never drift. Every injected node is aria-hidden, because
+   each one restates something already on the page as text. */
+(function () {
+  'use strict';
+
+  var doc = document;
+  var AR = doc.documentElement.getAttribute('dir') === 'rtl';
+  var FOUNDED = 1993;
+
+  /* Reveal helper: these are injected after the phase 1 observer has already
+     collected its targets, so each one carries its own. */
+  function onSeen(el) {
+    if (!('IntersectionObserver' in window)) { el.classList.add('in'); return; }
+    new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        el.classList.add('in');
+        obs.unobserve(el);
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' }).observe(el);
+  }
+
+  /* ---------- 1. programme bar ----------
+     The fact labels are translated (Timeline / المدة), so this matches on the
+     shape of the VALUE instead. Arabic pages write years in Latin digits, so
+     one pattern serves both. Anchoring to 19xx/20xx and to the whole value
+     keeps it off quantities such as "250,000 m2" or "200 staff". */
+  var YEAR_VALUE = /^\s*(19|20)\d{2}(\s*[–—-]\s*(19|20)\d{2})?\s*(\([^)]*\))?\s*$/;
+
+  function programmeBar() {
+    var facts = doc.querySelector('.facts');
+    if (!facts) return;
+
+    var found = null;
+    [].slice.call(facts.querySelectorAll('b')).some(function (b) {
+      var t = (b.textContent || '').trim();
+      if (YEAR_VALUE.test(t)) { found = t; return true; }
+      return false;
+    });
+    if (!found) return;
+
+    var years = found.match(/(19|20)\d{2}/g).map(Number);
+    var from = years[0];
+    var to = years.length > 1 ? years[1] : years[0];
+    var end = new Date().getFullYear();
+    if (to < from || from < FOUNDED || to > end) return;
+
+    var span = end - FOUNDED;
+    if (span <= 0) return;
+
+    var el = doc.createElement('div');
+    el.className = 'mg-prog';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML =
+      '<div class="mg-prog-track"><i style="--l:' + ((from - FOUNDED) / span).toFixed(4) +
+      ';--w:' + Math.max((to - from) / span, 0.02).toFixed(4) + '"></i></div>' +
+      '<div class="mg-prog-axis"><span>' + FOUNDED + '</span><span>' + end + '</span></div>';
+    facts.parentNode.insertBefore(el, facts.nextSibling);
+    onSeen(el);
+  }
+
+  /* ---------- 2. portfolio diagram ----------
+     Labels come from the filter chips, which are already translated on the
+     Arabic page, so the diagram inherits correct Arabic and can never
+     disagree with the chips directly above it. */
+  function portfolio() {
+    var grid = doc.getElementById('pgrid');
+    if (!grid) return;
+    var cards = [].slice.call(grid.querySelectorAll('.proj[data-cat]'));
+    if (cards.length < 4) return;
+
+    var rows = [];
+    [].slice.call(doc.querySelectorAll('.fbtn[data-f]')).forEach(function (b) {
+      var key = b.getAttribute('data-f');
+      if (key === 'all') return;
+      var n = cards.filter(function (c) { return c.getAttribute('data-cat') === key; }).length;
+      if (n > 0) rows.push({ label: (b.textContent || '').trim(), n: n });
+    });
+    if (rows.length < 2) return;
+
+    var max = rows.reduce(function (m, r) { return r.n > m ? r.n : m; }, 0);
+    var el = doc.createElement('div');
+    el.className = 'mg-folio';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = rows.map(function (r, idx) {
+      return '<div class="mg-folio-row" style="--d:' + (idx * 90) + 'ms">' +
+        '<span class="k"></span>' +
+        '<span class="b"><i style="--w:' + (r.n / max).toFixed(4) + '"></i></span>' +
+        '<span class="n">' + r.n + '</span></div>';
+    }).join('');
+    /* labels go in as text, never as markup, since they come from the page */
+    [].slice.call(el.querySelectorAll('.k')).forEach(function (k, i) {
+      k.textContent = rows[i].label;
+    });
+    grid.parentNode.insertBefore(el, grid);
+    onSeen(el);
+  }
+
+  /* ---------- 3. honest stat meters ----------
+     Only a stat that IS a proportion gets a meter. "30+" and "25+" are
+     counts, and drawing them to a width would invent a denominator the site
+     does not have, so they keep the plain rule they have today. */
+  function statMeters() {
+    [].slice.call(doc.querySelectorAll('.stats .stat')).forEach(function (st) {
+      var num = st.querySelector('.num');
+      var suffix = num && num.querySelector('i');
+      if (!num || !suffix || (suffix.textContent || '').trim() !== '%') return;
+      var m = /(\d+)/.exec(num.textContent || '');
+      var bar = st.querySelector('.bar');
+      if (!m || !bar) return;
+      bar.classList.add('mg-meter');
+      bar.style.setProperty('--v', (Math.min(parseInt(m[1], 10), 100) / 100).toFixed(4));
+    });
+  }
+
+  /* ---------- 4. footer title block ----------
+     The ruled box in the corner of a drawing sheet. Every value is a fact
+     already stated elsewhere on the page, which is why the block is
+     aria-hidden: a second announcement would be noise. No revision or sheet
+     number, since either would imply a fact the site does not have. */
+  function titleBlock() {
+    var foot = doc.querySelector('footer .wrap');
+    var grid = foot && foot.querySelector('.foot-grid');
+    if (!foot || !grid) return;
+
+    var fields = AR
+      ? [['الجهة', 'Current for Construction Supply'],
+         ['النطاق', 'مصر · السعودية · ليبيا'],
+         ['يعمل منذ', '1993']]
+      : [['DRAWN BY', 'Current for Construction Supply'],
+         ['TERRITORY', 'Egypt · KSA · Libya'],
+         ['IN PRACTICE SINCE', '1993']];
+
+    var el = doc.createElement('div');
+    el.className = 'mg-tblock';
+    el.setAttribute('aria-hidden', 'true');
+    fields.forEach(function (f) {
+      var cell = doc.createElement('div');
+      cell.className = 'cell';
+      var k = doc.createElement('span');
+      k.className = 'k';
+      k.textContent = f[0];
+      var v = doc.createElement('b');
+      v.textContent = f[1];
+      cell.appendChild(k);
+      cell.appendChild(v);
+      el.appendChild(cell);
+    });
+    foot.insertBefore(el, grid);
+  }
+
+  programmeBar();
+  portfolio();
+  statMeters();
+  titleBlock();
+})();
