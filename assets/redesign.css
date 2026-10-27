@@ -272,8 +272,14 @@ footer{background:var(--ink);color:var(--on-navy-mute);padding:70px 0 0}
 .foot-logo{height:62px;width:auto;filter:brightness(0) invert(1);opacity:.96}
 .foot-brand p{margin:16px 0 22px;font-size:14px;max-width:34ch;color:var(--on-navy-mute)}
 footer h2{color:#fff;font-family:Manrope;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
-footer .col a{display:block;color:var(--on-navy-mute);font-size:14px;padding:5px 0;transition:.2s}
-footer .col a:hover{color:#fff}
+/* :not(.btn) matters. This rule is more specific than .btn-light, so without
+   it the footer's white "Request a Quote" button inherited the muted navy
+   link colour: 2.26:1 on white, and display:block stripped its height to
+   35px. The exclusion fixes legibility and the hit target together.
+   min-height carries the 44pt target without changing how the link looks. */
+footer .col a:not(.btn){display:flex;align-items:center;min-height:44px;
+  color:var(--on-navy-mute);font-size:14px;padding:2px 0;transition:.2s}
+footer .col a:not(.btn):hover{color:#fff}
 .office{font-size:13.5px;line-height:1.7;margin-bottom:16px}
 .office b{color:#fff;display:block;font-family:Manrope}
 .office a{display:inline-block;color:var(--on-navy-mute)}
@@ -288,7 +294,7 @@ footer .col a:hover{color:#fff}
 .mbar a b{font-size:19px;font-weight:400;line-height:1}
 .mbar a.q{background:#fff;color:var(--ink)}
 .mbar a.wa b{color:#25D366}
-@media(max-width:1000px){.mbar{display:grid}.wa-float{bottom:96px}body{padding-bottom:64px}}
+@media(max-width:1000px){.mbar{display:grid}.wa-float{bottom:96px}}
 
 /* reveal animation */
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
@@ -1274,3 +1280,51 @@ main:focus{outline:none}
   font-weight:800;font-size:11px;color:var(--cobalt);flex:none;min-width:12px}
 [dir="rtl"] .svc-legend li{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
 .mg-svc-plain svg{max-width:520px}
+
+/* ============ HIT TARGETS AND LEGIBILITY ====================================
+   Apple's guidance is a 44pt minimum hit target and a floor on secondary text
+   size. The approach here is theirs too: grow the touch area, not the design.
+   Padding and min-height do the work, so nothing on screen gets visually
+   heavier and the existing layout holds.
+   ============================================================================ */
+
+/* The language switch changes the entire site for an Arabic-first visitor,
+   which makes it one of the most consequential controls on the page, and it
+   was a 47x30 tap. The chrome stays the same size; the target grows. */
+.lang{display:flex;align-items:center}
+.lang a,.lang .on{display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;min-width:44px;padding:0 10px}
+
+/* Utility-bar and footer contact links: phone and email are the two actions a
+   buyer on a phone is most likely to take, and both were 34px. */
+.util a,footer .office a,.mnav-contact a{display:inline-flex;align-items:center;min-height:44px}
+/* The logo is the way back to the homepage, so it is a control, not an
+   image. Its picture stays 46px; only the tappable area reaches 44pt. */
+.brand{display:inline-flex;align-items:center;min-height:44px}
+
+/* The desktop nav appears above 1000px, which includes every iPad in
+   landscape, so these are finger targets too. */
+.menu a{min-height:44px;display:inline-flex;align-items:center}
+
+/* 10px was below the floor for secondary text. 11px is the smallest size
+   Apple uses for a caption, and the title block is a caption. */
+.mg-tblock .k{font-size:11px}
+
+/* The sticky bar's three actions are the primary conversion path on a phone.
+   They were already tall enough; the labels were not legible enough. */
+.mbar a b{font-size:11.5px}
+
+/* One stale rule: a 64px body padding for the sticky bar, later overridden by
+   the correct 76px plus the safe-area inset. Left in place it is a trap for
+   whoever next changes the bar's height. */
+
+/* Breadcrumbs sit on one dense line, so the target grows vertically with
+   padding and is pulled back with an equal negative margin. The hit area
+   reaches 44pt; the line keeps its height. This is the HIG pattern of
+   separating the touch target from the drawn control. */
+.crumb a{display:inline-block;padding:13px 0;margin:-13px 0}
+
+/* The lightbox dismiss was 34px. A control whose only job is to get you out
+   of a modal should never be the hardest thing on screen to hit. */
+.lightbox .x{display:flex;align-items:center;justify-content:center;
+  min-width:44px;min-height:44px}
