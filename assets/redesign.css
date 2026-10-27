@@ -1258,3 +1258,19 @@ main:focus{outline:none}
   .mg-svc .svc-run{opacity:1!important}
   .svc-chip{opacity:1!important}
 }
+
+/* --- the nine remaining service schematics -------------------------------
+   Numbered callouts on the drawing key into a numbered list underneath, so
+   the labels are the page's own scope wording and the drawing adds no copy
+   of its own. A numbered list is honest here: these are keys, not a
+   sequence, so the numbers mean "see 1" rather than "first". */
+.sx-cap{font-family:Manrope,sans-serif;font-size:11px;font-weight:800;
+  fill:var(--cobalt);letter-spacing:0;direction:ltr}
+.sx-soft.sx-existing{stroke-dasharray:5 4}
+.svc-legend{list-style:none;counter-reset:k;display:grid;gap:7px;margin-top:14px;padding:0}
+.svc-legend li{counter-increment:k;display:flex;gap:10px;align-items:baseline;
+  font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13.5px;color:var(--muted)}
+.svc-legend li::before{content:counter(k);font-family:Manrope,sans-serif;
+  font-weight:800;font-size:11px;color:var(--cobalt);flex:none;min-width:12px}
+[dir="rtl"] .svc-legend li{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+.mg-svc-plain svg{max-width:520px}

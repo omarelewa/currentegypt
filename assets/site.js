@@ -1112,6 +1112,14 @@
   }
 })();
 
+/* Service pages anchor their schematic above "How we deliver it". Design and
+   Build has that heading but no .steps block, so fall through to the element
+   after the scope list rather than skipping the page. */
+function svcFallbackAnchor(doc) {
+  var inc = doc.querySelector('.inc');
+  return inc ? inc.nextElementSibling || inc : null;
+}
+
 /* Current — service schematics (v5)
    A drawn schematic of the service itself, keyed to the page's own
    "What's included" list so the labels are the page's words rather than new
@@ -1128,7 +1136,7 @@
   var AR = doc.documentElement.getAttribute('dir') === 'rtl';
   if (!/service-mep/.test(location.pathname)) return;
 
-  var head = doc.querySelector('.steps');
+  var head = doc.querySelector('.steps') || svcFallbackAnchor(doc);
   if (!head) return;
 
   /* Three runs through one section, each highlighted in turn. One accent
@@ -1224,5 +1232,166 @@
     }, { threshold: 0, rootMargin: '0px 0px -5% 0px' }).observe(fig);
   } else {
     run();
+  }
+})();
+
+/* Current — service schematics, the remaining nine (v6)
+   One drawing per service, each showing what that service actually does. No
+   template: a fit-out and a seawater intake share no geometry, so each is
+   drawn on its own terms.
+
+   Labels are read from the page's own "What's included" list at runtime, so
+   this adds no copy and inherits correct Arabic. */
+(function () {
+  'use strict';
+
+  var doc = document;
+  if (doc.querySelector('.mg-svc')) return;          /* MEP already drawn */
+  var slug = (location.pathname.split('/').pop() || '')
+    .replace(/-ar\.html$/, '').replace(/\.html$/, '');
+  if (slug.indexOf('service-') !== 0) return;
+
+  var head = doc.querySelector('.steps') || svcFallbackAnchor(doc);
+  if (!head) return;
+
+  /* the page's own scope list supplies every label */
+  var inc = [].slice.call(doc.querySelectorAll('.inc li')).map(function (li) {
+    return (li.textContent || '').trim();
+  });
+  if (inc.length < 3) return;
+
+  var G = 170;                      /* ground line, shared by the elevations */
+  function label(i, x, y, anchor) {
+    return '<text class="sx-cap" x="' + x + '" y="' + y + '"' +
+           (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + (i + 1) + '</text>';
+  }
+
+  var D = {
+    'service-civil-works': function () {
+      return '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + G + 'h130M370 ' + G + 'h130"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M150 ' + G + 'l24 44h172l24-44"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M166 ' + G + 'v40M354 ' + G + 'v40"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-firm" d="M196 214v34M260 214v34M324 214v34"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-dim" d="M60 150h60M60 144v12M120 144v12"/>' +
+        label(0, 90, 138, 'middle') + label(1, 260, 206, 'middle') + label(2, 260, 262, 'middle');
+    },
+    'service-commercial-administrative': function () {
+      return '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + G + 'h480"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M60 ' + G + 'V40h86v130M78 56h50M78 82h50M78 108h50M78 134h50"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-firm" d="M186 ' + G + 'V86h110v84M186 116h110"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-firm" d="M336 ' + G + 'V112l62-22 62 22v58"/>' +
+        label(0, 103, 30, 'middle') + label(1, 241, 76, 'middle') + label(2, 398, 80, 'middle');
+    },
+    'service-concrete-steel': function () {
+      return '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + G + 'h480"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M70 ' + G + 'V50h58v120M70 90h58M70 130h58"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M86 66v88M98 66v88M110 66v88"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-firm" d="M190 ' + G + 'V62h260v108M190 62l130-26 130 26M250 62v108M320 62v108M390 62v108"/>' +
+        label(0, 99, 40, 'middle') + label(1, 152, 110, 'middle') + label(2, 320, 26, 'middle');
+    },
+    'service-design-build': function () {
+      /* Two programmes on one time axis. Design and build run in sequence
+         above and overlap below, so the saving is the difference in the two
+         dimension lines rather than a claim in words. No figure is given,
+         because the site publishes none. */
+      return '<path data-draw="1" pathLength="1" class="sx-firm" d="M60 56h160v30H60z"/>' +
+        '<path data-draw="1" pathLength="1" class="sx-firm" d="M220 56h240v30H220z"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-dim" d="M60 104h400M60 98v12M460 98v12"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M60 160h160v30H60z"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M150 196h210v30H150z"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M150 160v66"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-dim" d="M60 244h300M60 238v12M360 238v12"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-dim sx-existing" d="M360 244h100M460 238v12"/>' +
+        label(0, 140, 48, 'middle') + label(1, 340, 48, 'middle') + label(2, 185, 152, 'middle');
+    },
+    'service-fit-out': function () {
+      return '<path data-draw="1" pathLength="1" class="sx-firm" d="M50 40h420v180H50z"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M50 76h420"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M110 76v144M230 76v144M350 76v144"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M80 58h60M200 58h60M320 58h60M420 58h30"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-ground" d="M50 196h420"/>' +
+        label(0, 170, 150, 'middle') + label(1, 290, 150, 'middle') + label(2, 260, 32, 'middle');
+    },
+    'service-general-contracting': function () {
+      var out = '<path data-draw="1" pathLength="1" class="sx-live" d="M196 92h128v40H196z"/>';
+      var tx = [[60, 40], [60, 112], [60, 184], [440, 40], [440, 112], [440, 184]];
+      var p = '';
+      tx.forEach(function (t) {
+        p += 'M' + t[0] + ' ' + t[1] + 'h64v30h-64z';
+      });
+      out += '<path data-draw="2" pathLength="1" class="sx-firm" d="' + p + '"/>';
+      var l = '';
+      tx.forEach(function (t) {
+        var x = t[0] < 260 ? 124 : 440, y = t[1] + 15;
+        l += 'M' + x + ' ' + y + 'H' + (t[0] < 260 ? 196 : 324);
+      });
+      out += '<path data-draw="3" pathLength="1" class="sx-ground" d="' + l + '"/>';
+      return out + label(0, 260, 84, 'middle') + label(1, 92, 32, 'middle') + label(2, 472, 32, 'middle');
+    },
+    'service-housing': function () {
+      var p = '';
+      for (var i = 0; i < 5; i++) {
+        var x = 46 + i * 58;
+        p += 'M' + x + ' ' + G + 'V124l22-18 22 18v46';
+      }
+      return '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + G + 'h480"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="' + p + '"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-firm" d="M358 ' + G + 'V54h104v116M358 86h104M358 118h104M358 150h104"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M30 190h450"/>' +
+        label(0, 90, 100, 'middle') + label(1, 410, 44, 'middle') + label(2, 255, 206, 'middle');
+    },
+    'service-process-industrial': function () {
+      return '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + G + 'h480"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M60 ' + G + 'V46h380v124"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M60 46h380"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M86 74h328"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M150 74v10M350 74v10"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-firm" d="M110 ' + G + 'h70v-26h-70zM300 ' + G + 'h80v-34h-80z"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M210 118h60v52h-60z"/>' +
+        label(0, 145, 162, 'middle') + label(1, 250, 66, 'middle') + label(2, 240, 110, 'middle');
+    },
+    'service-renovation-turnkey': function () {
+      return '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + G + 'h480"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-soft sx-existing" d="M60 ' + G + 'V56h190v114M60 90h190M60 124h190"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-firm" d="M250 ' + G + 'V56h190v114M250 90h190M250 124h190"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M250 40v144"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M268 148h154"/>' +
+        label(0, 155, 46, 'middle') + label(1, 345, 46, 'middle') + label(2, 345, 200, 'middle');
+    }
+  };
+
+  /* Which scope items the three callouts point at. The default of the first
+     three only holds where the drawing's parts happen to match the list
+     order; on Design and Build the bars are phases, not scope items, so the
+     mapping is explicit. Checked against each page's own list. */
+  var IDX = {
+    'service-design-build': [1, 0, 3],
+    'service-general-contracting': [0, 2, 3],
+    'service-renovation-turnkey': [0, 2, 1]
+  };
+  var pick = IDX[slug] || [0, 1, 2];
+
+  var draw = D[slug];
+  if (!draw) return;
+
+  var fig = doc.createElement('figure');
+  fig.className = 'mg-section mg-svc-plain reveal';
+  fig.innerHTML =
+    '<svg viewBox="0 0 520 270" fill="none" aria-hidden="true" focusable="false">' + draw() + '</svg>' +
+    '<ol class="svc-legend"></ol>';
+  var ol = fig.querySelector('.svc-legend');
+  pick.forEach(function (i) {
+    var li = doc.createElement('li');
+    li.textContent = inc[i] || inc[0];
+    ol.appendChild(li);
+  });
+  head.parentNode.insertBefore(fig, head);
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, o) {
+      es.forEach(function (e) { if (e.isIntersecting) { o.unobserve(fig); fig.classList.add('in'); } });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' }).observe(fig);
+  } else {
+    fig.classList.add('in');
   }
 })();
