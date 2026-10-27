@@ -914,3 +914,200 @@
   commissioning();
   dimensionTicks();
 })();
+
+/* Current — project section drawings (v5)
+   A scaled drawing of what was built, on the project pages whose facts carry
+   real geometry. Six qualify; the rest have no dimensions to draw and get
+   nothing, which is the honest outcome rather than a decorative stand-in.
+
+   The numbers are curated here rather than parsed from the page, because the
+   facts are written as prose ("~8,000 m2 over three floors", "250-ton
+   structure, 4,500 m2 free span") and a parser over that would be the most
+   fragile thing on the site. Every value below is traceable to a row in its
+   page's facts list, and the drawing states the scale it used.
+
+   Unlike the ornament layers, these carry information: each is a <figure>
+   with a caption, left in the accessibility tree, and each prints, because
+   project pages go into bid files. */
+(function () {
+  'use strict';
+
+  var doc = document;
+  var AR = doc.documentElement.getAttribute('dir') === 'rtl';
+  if (doc.querySelector('.mg-section')) return;   /* Sidi Kerir is bespoke */
+
+  var slug = (location.pathname.split('/').pop() || '')
+    .replace(/-ar\.html$/, '').replace(/\.html$/, '');
+
+  /* type: hall  = clear-span portal frame, from span and clear height
+     type: floors = stacked floor plates, from area and floor count
+     type: units  = repeated identical blocks, from unit count
+     type: column = bare column elevation, from column height          */
+  var P = {
+    'project-central-bus-hub': {
+      type: 'hall', span: 12, height: 11, bays: 4,
+      en: 'Section through the hall: 12 m clear spans at 11 m to the underside, repeated across the 24,000 m&sup2; floor.',
+      ar: 'مقطع في الصالة: بحور حرة 12 م بارتفاع 11 م حتى الأسفل، مكررة عبر أرضية 24,000 م².'
+    },
+    'project-emc-adidas': {
+      type: 'hall', span: 24, height: 12, bays: 2,
+      en: 'Section through the free-span hall: 4,500 m&sup2; clear of columns, carried on a 250-ton steel structure.',
+      ar: 'مقطع في الصالة الحرة: 4,500 م² بلا أعمدة، محمولة على هيكل معدني بوزن 250 طنًا.'
+    },
+    'project-emc-8': {
+      type: 'floors', floors: 3, height: 4.5,
+      en: 'Section through the block: three floors totalling about 8,000 m&sup2;, on a 300-ton steel structure.',
+      ar: 'مقطع في المبنى: ثلاثة طوابق بإجمالي نحو 8,000 م²، على هيكل معدني بوزن 300 طن.'
+    },
+    'project-emc-calvin-klein': {
+      type: 'floors', floors: 2, height: 4.5,
+      en: 'Section through the block: two floors totalling 4,500 m&sup2;, on a 250-ton steel structure.',
+      ar: 'مقطع في المبنى: طابقان بإجمالي 4,500 م²، على هيكل معدني بوزن 250 طنًا.'
+    },
+    'project-medco-plast': {
+      type: 'column', height: 16,
+      en: 'Elevation of the frame: 16 m columns on concrete foundations, carrying the steel structure above.',
+      ar: 'واجهة الهيكل: أعمدة بارتفاع 16 م على أساسات خرسانية، تحمل الهيكل المعدني أعلاها.'
+    },
+    'project-touristic-villas': {
+      type: 'units', units: 30, perRow: 10,
+      en: 'Site layout: 30 standalone villas, each delivered complete, at Al Galala on the Red Sea.',
+      ar: 'توزيع الموقع: 30 فيلا مستقلة، سُلّمت كل واحدة كاملة، بالجلالة على البحر الأحمر.'
+    },
+    'project-residential-apartment-buildings': {
+      type: 'units', units: 8, perRow: 4,
+      en: 'Site layout: 8 multi-storey residential buildings in the R1 district of the New Administrative Capital.',
+      ar: 'توزيع الموقع: 8 مبانٍ سكنية متعددة الطوابق في حي R1 بالعاصمة الإدارية الجديدة.'
+    }
+  };
+
+  var spec = P[slug];
+  if (!spec) return;
+
+  /* The drawing goes after the prose and before whatever follows it. Most
+     pages have a challenge/solution/result block to sit above; Medco Plast
+     has neither that nor a gallery, which is exactly why it needed the
+     drawing most, so fall through to appending after the last paragraph of
+     the detail column. */
+  var anchor = doc.querySelector('.csr') || doc.querySelector('.gallery');
+  var column = null;
+  if (!anchor) {
+    var detail = doc.querySelector('.detail');
+    column = detail && detail.firstElementChild;
+    if (!column) return;
+  }
+
+  var M = {};   /* each drawing returns its own svg body + viewBox */
+
+  M.hall = function (s) {
+    var px = 9;                                    /* 9px to the metre */
+    var bay = s.span * px;                         /* ONE bay is the span */
+    var w = bay * s.bays, h = s.height * px;
+    var x0 = 70, ground = 40 + h;
+    var d = '', cols = '', dim = '';
+    for (var i = 0; i <= s.bays; i++) {
+      cols += 'M' + (x0 + i * bay) + ' ' + ground + 'V40';
+    }
+    d = 'M' + x0 + ' 40h' + w;                      /* roof beam */
+    var right = x0 + w;
+    dim = 'M' + x0 + ' ' + (ground + 28) + 'h' + bay +
+          'M' + x0 + ' ' + (ground + 22) + 'v12' +
+          'M' + (x0 + bay) + ' ' + (ground + 22) + 'v12';
+    return {
+      vb: '0 0 ' + (right + 90) + ' ' + (ground + 54),
+      body:
+        '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + ground + 'H' + (right + 40) + '"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="' + cols + '"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-firm" d="' + d + '"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M' + x0 + ' 34h' + w + '"/>' +
+        '<g data-fade class="sx-dim">' +
+          '<path d="' + dim + '"/>' +
+          '<text x="' + (x0 + bay / 2) + '" y="' + (ground + 48) + '" text-anchor="middle">' + s.span + (AR ? ' م' : ' m') + '</text>' +
+          '<path d="M' + (right + 24) + ' 40v' + h + 'M' + (right + 18) + ' 40h12M' + (right + 18) + ' ' + ground + 'h12"/>' +
+          '<text x="' + (right + 56) + '" y="' + (40 + h / 2) + '" text-anchor="middle">' + s.height + (AR ? ' م' : ' m') + '</text>' +
+        '</g>'
+    };
+  };
+
+  M.floors = function (s) {
+    var px = 14, fh = s.height * px, w = 300, x0 = 70;
+    var ground = 30 + s.floors * fh, body = '', dim = '';
+    for (var i = 0; i < s.floors; i++) {
+      var y = 30 + i * fh;
+      body += 'M' + x0 + ' ' + y + 'h' + w;
+    }
+    body += 'M' + x0 + ' ' + ground + 'h' + w;
+    var right = x0 + w;
+    return {
+      vb: '0 0 ' + (right + 90) + ' ' + (ground + 50),
+      body:
+        '<path data-draw="1" pathLength="1" class="sx-ground" d="M20 ' + ground + 'H' + (right + 40) + '"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M' + x0 + ' 30v' + (ground - 30) + 'M' + right + ' 30v' + (ground - 30) + '"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-firm" d="' + body + '"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M' + (x0 + 30) + ' ' + (30 + fh * 0.5) + 'h' + (w - 60) + '"/>' +
+        '<g data-fade class="sx-dim">' +
+          '<path d="M' + (right + 24) + ' 30v' + fh + 'M' + (right + 18) + ' 30h12M' + (right + 18) + ' ' + (30 + fh) + 'h12"/>' +
+          '<text x="' + (right + 58) + '" y="' + (34 + fh / 2) + '" text-anchor="middle">' + s.height + (AR ? ' م' : ' m') + '</text>' +
+        '</g>'
+    };
+  };
+
+  M.column = function (s) {
+    var px = 12, h = s.height * px, ground = 30 + h, x0 = 120;
+    return {
+      vb: '0 0 420 ' + (ground + 50),
+      body:
+        '<path data-draw="1" pathLength="1" class="sx-ground" d="M30 ' + ground + 'H390"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="M' + (x0 - 26) + ' ' + ground + 'h52v16h-52z' +
+          'M' + (x0 + 134) + ' ' + ground + 'h52v16h-52z"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-firm" d="M' + x0 + ' ' + ground + 'V30M' + (x0 + 160) + ' ' + ground + 'V30"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M' + (x0 - 14) + ' 30h188"/>' +
+        '<g data-fade class="sx-dim">' +
+          '<path d="M330 30v' + h + 'M324 30h12M324 ' + ground + 'h12"/>' +
+          '<text x="362" y="' + (34 + h / 2) + '" text-anchor="middle">' + s.height + (AR ? ' م' : ' m') + '</text>' +
+        '</g>'
+    };
+  };
+
+  M.units = function (s) {
+    var cols = s.perRow, rows = Math.ceil(s.units / cols);
+    var bw = 34, bh = 26, gx = 12, gy = 14, x0 = 30, y0 = 30;
+    var body = '', n = 0;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols && n < s.units; c++, n++) {
+        var x = x0 + c * (bw + gx), y = y0 + r * (bh + gy);
+        body += 'M' + x + ' ' + y + 'h' + bw + 'v' + bh + 'h-' + bw + 'z';
+      }
+    }
+    var W = x0 * 2 + cols * (bw + gx) - gx;
+    var H = y0 * 2 + rows * (bh + gy) - gy;
+    return {
+      vb: '0 0 ' + W + ' ' + H,
+      body:
+        '<path data-draw="2" pathLength="1" class="sx-firm" d="' + body + '"/>' +
+        '<path data-draw="1" pathLength="1" class="sx-ground" d="M' + (x0 - 12) + ' ' + (H - 16) + 'H' + (W - x0 + 12) + '"/>'
+    };
+  };
+
+  var drawn = M[spec.type](spec);
+  var fig = doc.createElement('figure');
+  fig.className = 'mg-section reveal';
+  fig.innerHTML =
+    '<svg viewBox="' + drawn.vb + '" fill="none" aria-hidden="true" focusable="false">' + drawn.body + '</svg>' +
+    '<figcaption></figcaption>';
+  fig.querySelector('figcaption').innerHTML = AR ? spec.ar : spec.en;
+  if (anchor) anchor.parentNode.insertBefore(fig, anchor);
+  else column.appendChild(fig);
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, o) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        fig.classList.add('in');
+        o.unobserve(fig);
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' }).observe(fig);
+  } else {
+    fig.classList.add('in');
+  }
+})();
