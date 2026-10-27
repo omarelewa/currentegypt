@@ -1111,3 +1111,118 @@
     fig.classList.add('in');
   }
 })();
+
+/* Current — service schematics (v5)
+   A drawn schematic of the service itself, keyed to the page's own
+   "What's included" list so the labels are the page's words rather than new
+   copy. Like the project sections these carry information: a figure with a
+   caption, left in the accessibility tree, and they print.
+
+   MEP is the first; the remaining nine services each need their own drawing,
+   curated the same way, because a warehouse fit-out and a seawater intake
+   share no useful geometry. */
+(function () {
+  'use strict';
+
+  var doc = document;
+  var AR = doc.documentElement.getAttribute('dir') === 'rtl';
+  if (!/service-mep/.test(location.pathname)) return;
+
+  var head = doc.querySelector('.steps');
+  if (!head) return;
+
+  /* Three runs through one section, each highlighted in turn. One accent
+     throughout rather than three colours, because the site has one accent
+     and a traffic-light palette would not belong to it. */
+  var RUNS = AR
+    ? [['التكييف والتهوية', 'HVAC'], ['كشف الحريق والحماية منه', 'FIRE'], ['الكهرباء وتوزيع القوى', 'POWER']]
+    : [['HVAC & ventilation', 'HVAC'], ['Fire detection & protection', 'FIRE'], ['Electrical & power distribution', 'POWER']];
+
+  var CAP = AR
+    ? 'ثلاث شبكات في مقطع واحد: التكييف والتهوية، وكشف الحريق والحماية، والكهرباء وتوزيع القوى، منسَّقة فوق السقف المستعار قبل تثبيت أي ماسورة.'
+    : 'Three networks in one section: ventilation, fire protection and power distribution, coordinated above the false ceiling before a single conduit is fixed.';
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  var fig = doc.createElement('figure');
+  fig.className = 'mg-section mg-svc reveal';
+  fig.innerHTML =
+    '<svg viewBox="0 0 520 250" fill="none" aria-hidden="true" focusable="false">' +
+      /* structural slab over, floor under, false ceiling between */
+      '<path data-draw="1" pathLength="1" class="sx-firm" d="M40 26h440M40 226h440"/>' +
+      '<path data-draw="1" pathLength="1" class="sx-ground" d="M40 140h440"/>' +
+      '<path data-draw="1" pathLength="1" class="sx-firm" d="M40 26v200M480 26v200"/>' +
+      /* duct run, the largest section, nearest the slab */
+      '<g class="svc-run" data-run="0">' +
+        '<path data-draw="2" pathLength="1" class="sx-live" d="M70 52h380M70 52v26h380V52"/>' +
+        '<path data-draw="2" pathLength="1" class="sx-live" d="M150 78v22M330 78v22"/>' +
+        '<circle data-pop class="sx-live-f" cx="150" cy="104" r="5"/>' +
+        '<circle data-pop class="sx-live-f" cx="330" cy="104" r="5"/>' +
+      '</g>' +
+      /* sprinkler main and heads, below the duct, above the ceiling */
+      '<g class="svc-run" data-run="1">' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M70 116h380"/>' +
+        '<path data-draw="3" pathLength="1" class="sx-live" d="M110 116v16M230 116v16M350 116v16M430 116v16"/>' +
+        '<circle data-pop class="sx-live-f" cx="110" cy="134" r="3.5"/>' +
+        '<circle data-pop class="sx-live-f" cx="230" cy="134" r="3.5"/>' +
+        '<circle data-pop class="sx-live-f" cx="350" cy="134" r="3.5"/>' +
+        '<circle data-pop class="sx-live-f" cx="430" cy="134" r="3.5"/>' +
+      '</g>' +
+      /* containment drop to the distribution board */
+      '<g class="svc-run" data-run="2">' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M70 94h40v98"/>' +
+        '<path data-draw="4" pathLength="1" class="sx-live" d="M88 192h44v34H88z"/>' +
+      '</g>' +
+      '<g data-fade class="sx-dim">' +
+        '<path d="M40 16h440"/>' +
+        '<text x="40" y="10">' + esc(AR ? 'البلاطة الإنشائية' : 'STRUCTURAL SLAB') + '</text>' +
+        '<text x="40" y="154">' + esc(AR ? 'السقف المستعار' : 'FALSE CEILING') + '</text>' +
+        '<text x="140" y="214">' + esc(AR ? 'لوحة التوزيع' : 'DISTRIBUTION BOARD') + '</text>' +
+      '</g>' +
+    '</svg>' +
+    '<div class="svc-key"></div>' +
+    '<figcaption></figcaption>';
+
+  var key = fig.querySelector('.svc-key');
+  RUNS.forEach(function (r, i) {
+    var b = doc.createElement('span');
+    b.className = 'svc-chip';
+    b.setAttribute('data-for', i);
+    b.textContent = r[0];
+    key.appendChild(b);
+  });
+  fig.querySelector('figcaption').textContent = CAP;
+  head.parentNode.insertBefore(fig, head);
+
+  /* each run lights in turn once the figure has arrived, then all settle on */
+  function run() {
+    fig.classList.add('in');
+    var chips = [].slice.call(fig.querySelectorAll('.svc-chip'));
+    var runs = [].slice.call(fig.querySelectorAll('.svc-run'));
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      chips.forEach(function (c) { c.classList.add('on'); });
+      runs.forEach(function (g) { g.classList.add('on'); });
+      return;
+    }
+    runs.forEach(function (g, i) {
+      setTimeout(function () {
+        runs.forEach(function (o, j) { o.classList.toggle('lit', i === j); });
+        chips.forEach(function (c, j) { c.classList.toggle('on', j <= i); });
+        g.classList.add('on');
+      }, 1200 + i * 900);
+    });
+    setTimeout(function () {
+      runs.forEach(function (g) { g.classList.remove('lit'); g.classList.add('on'); });
+    }, 1200 + runs.length * 900);
+  }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, o) {
+      es.forEach(function (e) { if (e.isIntersecting) { o.unobserve(fig); run(); } });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' }).observe(fig);
+  } else {
+    run();
+  }
+})();
