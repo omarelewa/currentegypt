@@ -328,3 +328,121 @@
     });
   });
 })();
+
+/* Current — motion graphics (v3)
+   A decorative layer, kept in its own closure so nothing above it changes.
+   It injects the blueprint survey overlay that every hero carries, rebuilds
+   the homepage trust strip as a continuous client marquee, marks the sector
+   icons so the stylesheet can draw them, and drives the read-progress
+   hairline on browsers without scroll-driven animations.
+
+   Everything here is ornament. No content is created, every node is
+   aria-hidden, and a page with JavaScript off is simply the page without
+   the ornament. */
+(function () {
+  'use strict';
+
+  var doc = document;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+  function node(markup) {
+    var t = doc.createElement('template');
+    t.innerHTML = markup.trim();
+    return t.content.firstChild;
+  }
+
+  /* ---------- 1. survey overlay ----------
+     A surveyor's plot that draws itself behind the headline: plot outline,
+     interior division lines, then the two dimension lines, and finally the
+     survey point pops in. Each path holds several subpaths, and because
+     pathLength is normalised to 1 the dash sweeps through them in order, so
+     one path is one drawing stage. */
+  var SURVEY =
+    '<div class="mg-survey" aria-hidden="true">' +
+    '<svg viewBox="0 0 320 300" fill="none" focusable="false" preserveAspectRatio="xMidYMid meet">' +
+      '<g stroke="currentColor" stroke-width="1.3" stroke-linecap="square">' +
+        '<path data-draw="1" pathLength="1" d="M34 258V86h96V38h152v220z" opacity=".9"/>' +
+        '<path data-draw="2" pathLength="1" d="M130 86v172M130 158h152M34 158h96" opacity=".42"/>' +
+        '<path data-draw="3" pathLength="1" d="M34 282h248M34 274v16M282 274v16" opacity=".6"/>' +
+        '<path data-draw="4" pathLength="1" d="M300 38v220M292 38h16M292 258h16" opacity=".6"/>' +
+      '</g>' +
+      '<g data-pop>' +
+        '<circle cx="130" cy="158" r="4.5" fill="currentColor" opacity=".85"/>' +
+        '<circle cx="130" cy="158" r="12" stroke="currentColor" stroke-width="1.3" opacity=".5"/>' +
+      '</g>' +
+    '</svg></div>';
+
+  var hero = doc.querySelector('.hero') || doc.querySelector('.page-hero');
+  if (hero && !hero.querySelector('.mg-survey')) hero.appendChild(node(SURVEY));
+
+  /* ---------- 2. client marquee ----------
+     Only where the full logo wall is also on the page, which is the homepage.
+     The track is built from those same images and then filled a second time,
+     so translating it by half its width loops seamlessly. The copies are
+     decorative: each logo is already named, once, in the wall below. */
+  (function marquee() {
+    var strip = doc.querySelector('.trust .logo-row');
+    if (!strip) return;
+    var wall = doc.querySelectorAll('.logo-wall .cell img');
+    if (wall.length < 10) return;
+
+    var track = doc.createElement('div');
+    track.className = 'mg-track';
+    function fill() {
+      [].forEach.call(wall, function (im) {
+        var src = im.getAttribute('src');
+        if (!src) return;
+        var cell = doc.createElement('div');
+        cell.className = 'cell';
+        var copy = doc.createElement('img');
+        copy.src = src;
+        copy.alt = '';
+        copy.loading = 'lazy';
+        copy.decoding = 'async';
+        cell.appendChild(copy);
+        track.appendChild(cell);
+      });
+    }
+    fill();
+    fill();
+    if (!track.childNodes.length) return;
+
+    var box = doc.createElement('div');
+    box.className = 'mg-marquee';
+    box.setAttribute('aria-hidden', 'true');
+    box.appendChild(track);
+    strip.parentNode.replaceChild(box, strip);
+  })();
+
+  /* ---------- 3. sector icons draw themselves ----------
+     Restricted to the decorative sector tiles. The small inline icons inside
+     buttons, phone links and location lines are affordances, not ornament,
+     and animating those would be noise. */
+  [].forEach.call(doc.querySelectorAll('.sect .ic svg path, .sect .ic svg line, .sect .ic svg polyline'),
+    function (p) {
+      p.setAttribute('pathLength', '1');
+      p.setAttribute('class', ((p.getAttribute('class') || '') + ' mg-ink').trim());
+    });
+
+  /* ---------- 4. read progress ----------
+     Pure CSS where scroll-driven animations exist. This is the fallback for
+     everywhere else, and it is skipped entirely when less motion is asked
+     for, since the stylesheet hides the hairline in that case. */
+  var native = window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll()');
+  if (!native && !REDUCED.matches) {
+    var hdr = doc.getElementById('hdr');
+    if (hdr) {
+      var queued = false;
+      var measure = function () {
+        queued = false;
+        var h = doc.documentElement.scrollHeight - innerHeight;
+        hdr.style.setProperty('--mg-p', h > 0 ? Math.min(scrollY / h, 1).toFixed(4) : '0');
+      };
+      addEventListener('scroll', function () {
+        if (!queued) { queued = true; requestAnimationFrame(measure); }
+      }, { passive: true });
+      addEventListener('resize', measure, { passive: true });
+      measure();
+    }
+  }
+})();
