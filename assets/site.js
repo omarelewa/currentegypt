@@ -372,8 +372,32 @@
       '</g>' +
     '</svg></div>';
 
+  /* The same plot seen from above, drawn wide and short. This is what phones
+     and tablets get, since the portrait version needs a column beside the
+     headline that narrow screens do not have. The stylesheet swaps the two at
+     1100px, and both carry the .mg-survey class so every rule below about
+     drawing, reduced motion and print covers them without being repeated. */
+  var BAND =
+    '<div class="mg-survey mg-survey-band" aria-hidden="true">' +
+    /* 360x76 is about 4.7:1, which is the shape of this strip on a phone, so
+       the drawing fills the width instead of sitting small in the middle. */
+    '<svg viewBox="0 0 360 76" fill="none" focusable="false" preserveAspectRatio="xMidYMax meet">' +
+      '<g stroke="currentColor" stroke-width="1.3" stroke-linecap="square">' +
+        '<path data-draw="1" pathLength="1" d="M24 50V22h104V10h208v40z" opacity=".9"/>' +
+        '<path data-draw="2" pathLength="1" d="M128 22v28M128 36h208" opacity=".42"/>' +
+        '<path data-draw="3" pathLength="1" d="M24 64h312M24 59v10M336 59v10" opacity=".6"/>' +
+      '</g>' +
+      '<g data-pop>' +
+        '<circle cx="128" cy="36" r="3.5" fill="currentColor" opacity=".85"/>' +
+        '<circle cx="128" cy="36" r="8" stroke="currentColor" stroke-width="1.3" opacity=".5"/>' +
+      '</g>' +
+    '</svg></div>';
+
   var hero = doc.querySelector('.hero') || doc.querySelector('.page-hero');
-  if (hero && !hero.querySelector('.mg-survey')) hero.appendChild(node(SURVEY));
+  if (hero && !hero.querySelector('.mg-survey')) {
+    hero.appendChild(node(SURVEY));
+    hero.appendChild(node(BAND));
+  }
 
   /* ---------- 2. client marquee ----------
      Only where the full logo wall is also on the page, which is the homepage.

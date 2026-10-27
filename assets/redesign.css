@@ -820,7 +820,29 @@ main:focus{outline:none}
 .mg-survey [data-draw="4"]{animation-delay:.9s}
 .mg-survey [data-pop]{opacity:0;transform-box:fill-box;transform-origin:center;
   animation:mgPop .5s var(--ease-mark) 1.5s both}
-@media(max-width:1100px){.mg-survey{display:none}}
+/* Below 1100px the portrait plot has nowhere to stand, so the same drawing
+   is reproportioned as a band along the foot of the hero: a plot in plan with
+   its dimension line underneath. The two variants swap at the same
+   breakpoint, and the hero reserves the band's height below its content so
+   the drawing gets a strip of its own rather than hiding behind a button. */
+.mg-survey-band{position:absolute;inset-inline:0;bottom:0;inset-block-start:auto;
+  width:auto;height:clamp(74px,21vw,116px);display:none;opacity:.2;
+  /* the strip's own inset, so the dimension line and its end ticks are not
+     shaved off by the hero's bottom edge */
+  padding:0 clamp(14px,4vw,28px) clamp(12px,3.4vw,20px)}
+.mg-survey-band svg{width:100%;height:100%}
+.page-hero .mg-survey-band{opacity:.32}
+@media(max-width:1100px){
+  /* The foot of a narrow hero is already full: the calls to action and the
+     stat row run down to the padding, and a band placed over them would hide
+     behind a button. So the hero is given exactly the band's height as extra
+     bottom padding and the band occupies that reserved strip. */
+  :root{--mg-band-h:clamp(74px,21vw,116px)}
+  .mg-survey:not(.mg-survey-band){display:none}
+  .mg-survey-band{display:block;height:var(--mg-band-h)}
+  .hero .wrap{padding-bottom:calc(clamp(60px,8vw,96px) + var(--mg-band-h))}
+  .page-hero{padding-bottom:calc(clamp(40px,6vw,68px) + var(--mg-band-h))}
+}
 
 /* --- 2. scope diagram: the self-perform claim, drawn ----------------------
    Sits in the homepage approach band. Four stages build one sectional
@@ -941,7 +963,7 @@ main:focus{outline:none}
 
 /* --- print: decoration carries nothing onto paper ----------------------- */
 @media print{
-  .mg-survey,.hdr::after,.mg-scope-fig{display:none!important}
+  .mg-survey,.mg-survey-band,.hdr::after,.mg-scope-fig{display:none!important}
   .mg-marquee{overflow:visible!important;mask-image:none!important;-webkit-mask-image:none!important}
   .mg-marquee .mg-track{animation:none!important;flex-wrap:wrap!important;width:auto!important}
   .mg-scope{display:block!important;margin:0!important}
