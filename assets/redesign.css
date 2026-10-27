@@ -1062,3 +1062,124 @@ main:focus{outline:none}
   .mg-prog,.mg-folio,.mg-tblock{display:none!important}
   .stat .bar.mg-meter::after{transform:none!important}
 }
+
+/* ============ MOTION GRAPHICS, PHASE 3 ======================================
+   Five studies approved from the motion sheet. Same contract as phases 1 and
+   2: injected by site.js from markup already on the page, aria-hidden because
+   each restates a fact stated as text, finished without JavaScript, reset
+   under reduced motion and dropped in print.
+   ============================================================================ */
+
+/* --- 01 one line of accountability (services index) ---------------------- */
+.mg-acct{margin:26px auto 34px;max-width:720px;width:100%}
+.mg-acct svg{display:block;width:100%;height:auto}
+.mg-acct .seam{stroke-dasharray:3 4}
+.js .mg-acct [data-draw]{stroke-dasharray:1;stroke-dashoffset:1}
+.mg-acct.in [data-draw]{animation:mgDraw 1s var(--ease-out) var(--at,0s) both}
+.js .mg-acct [data-pop]{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.6)}
+.mg-acct.in [data-pop]{animation:mgPop .45s var(--ease-mark) var(--at,0s) both}
+.js .mg-acct [data-fade]{opacity:0}
+.mg-acct.in [data-fade]{animation:mgIn .5s var(--ease-out) var(--at,0s) both}
+
+/* --- 02 scale comparator (project case studies with an area) ------------- */
+.mg-scale{margin-top:20px}
+.mg-scale svg{display:block;width:100%;height:auto}
+.js .mg-scale [data-draw]{stroke-dasharray:1;stroke-dashoffset:1}
+.mg-scale.in [data-draw]{animation:mgDraw 1.1s var(--ease-out) var(--at,0s) both}
+.js .mg-scale [data-fade]{opacity:0}
+.mg-scale.in [data-fade]{animation:mgIn .55s var(--ease-out) var(--at,0s) both}
+
+/* --- 03 scrubbed isometric (homepage approach band) ---------------------- */
+/* The stage groups are driven by a scroll-derived index, so they carry no
+   animation of their own beyond the crossfade between stages. */
+.mg-iso-stage{opacity:0;transition:opacity .4s var(--ease-out)}
+.mg-iso-stage.on{opacity:1}
+.mg-scope-fig .mg-iso-label{font-family:Manrope,sans-serif;font-weight:700;
+  font-size:10px;letter-spacing:.16em;fill:var(--on-navy-mute)}
+[dir="rtl"] .mg-scope-fig .mg-iso-label{letter-spacing:0;
+  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+
+/* --- 04 commissioning sequence (MEP service page) ------------------------ */
+.mg-comm{margin:24px auto 30px;max-width:620px;width:100%}
+.mg-comm svg{display:block;width:100%;height:auto}
+.js .mg-comm [data-draw]{stroke-dasharray:1;stroke-dashoffset:1}
+.mg-comm.in [data-draw]{animation:mgDraw 1s var(--ease-out) var(--at,0s) both}
+.js .mg-comm [data-pop]{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.4)}
+.mg-comm.in [data-pop]{animation:mgPop .45s var(--ease-mark) var(--at,0s) both}
+.js .mg-comm [data-fade]{opacity:0}
+.mg-comm.in [data-fade]{animation:mgIn .5s var(--ease-out) var(--at,0s) both}
+
+/* --- 05 figures as dimensions (homepage stats) ---------------------------
+   End ticks travel with the meter fill, so a figure arrives measured. Only
+   the two percentages get them, for the reason phase 2 gives. */
+.stat .bar.mg-meter{overflow:visible}
+.stat .bar .mg-tick{position:absolute;top:-4px;width:1.5px;height:13px;
+  background:var(--accent);opacity:0}
+.stat .bar .mg-tick.a{inset-inline-start:0}
+.stat .bar .mg-tick.b{inset-inline-start:calc(var(--v) * 100%);
+  transform:translateX(-1.5px)}
+[dir="rtl"] .stat .bar .mg-tick.b{transform:translateX(1.5px)}
+.stat.reveal.in .bar .mg-tick{opacity:1;transition:opacity .3s var(--ease-out) 1.05s}
+
+/* --- phase 3 under reduced motion ---------------------------------------- */
+@media (prefers-reduced-motion: reduce){
+  .js .mg-acct [data-draw],.js .mg-scale [data-draw],.js .mg-comm [data-draw]{
+    stroke-dashoffset:0;animation:none}
+  .js .mg-acct [data-pop],.js .mg-comm [data-pop]{opacity:1;transform:none;animation:none}
+  .js .mg-acct [data-fade],.js .mg-scale [data-fade],.js .mg-comm [data-fade]{
+    opacity:1;animation:none}
+  .mg-iso-stage{transition:none}
+  .stat .bar .mg-tick{transition:none}
+}
+
+/* --- phase 3 in print ---------------------------------------------------- */
+@media print{
+  .mg-acct,.mg-scale,.mg-comm{display:none!important}
+  .stat .bar .mg-tick{display:none!important}
+}
+
+/* --- shared drawing primitives for phase 3 -------------------------------
+   Keyed for paper, which is where four of the five sit, then re-keyed once
+   for the navy approach band so the isometric reads on a dark ground. */
+/* SVG text inherits the document's direction, so on an Arabic page x becomes
+   the run's RIGHT edge and a label placed by its left edge lands outside its
+   box. Pinning the runs to ltr keeps every x meaning the same thing in both
+   languages; the Arabic strings are single runs and still shape correctly.
+   The drawings themselves are not mirrored, which is right for a technical
+   diagram: drawing conventions do not flip with the page. */
+.mg-acct text,.mg-scale text,.mg-comm text,.mg-scope-fig text{direction:ltr}
+.mg-ln{fill:none;stroke:var(--accent);stroke-width:1.3;stroke-linecap:square}
+.mg-firm{fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:square}
+.mg-soft{stroke:var(--line-2);stroke-width:1.2}
+.mg-live{fill:none;stroke:var(--cobalt);stroke-width:1.5;stroke-linecap:square}
+.mg-live-f{fill:var(--cobalt)}
+.mg-fill-a{fill:var(--cobalt);opacity:.2;stroke:none}
+.mg-fill-b{fill:var(--cobalt);opacity:.1;stroke:none}
+.mg-t{font-family:Manrope,sans-serif;font-size:9.5px;font-weight:600;
+  fill:var(--muted-2);letter-spacing:.08em}
+.mg-tf{font-family:Manrope,sans-serif;font-size:10px;font-weight:700;
+  fill:var(--ink);letter-spacing:.08em}
+.mg-tf-sm{font-size:8.6px;letter-spacing:.04em}
+.mg-tl{font-family:Manrope,sans-serif;font-size:10px;font-weight:700;
+  fill:var(--cobalt);letter-spacing:.08em}
+.mg-fig{font-family:Manrope,sans-serif;font-size:26px;font-weight:800;
+  fill:var(--cobalt);letter-spacing:-.02em}
+[dir="rtl"] .mg-t,[dir="rtl"] .mg-tf,[dir="rtl"] .mg-tl{
+  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;letter-spacing:0}
+
+/* the isometric sits on ink navy, so its strokes invert */
+.mg-scope-fig .mg-ln{stroke:rgba(255,255,255,.5)}
+.mg-scope-fig .mg-soft{stroke:rgba(255,255,255,.22)}
+.mg-scope-fig .mg-firm{stroke:rgba(255,255,255,.8)}
+.mg-scope-fig .mg-live{stroke:var(--cobalt-lt)}
+.mg-scope-fig .mg-live-f{fill:var(--cobalt-lt)}
+.mg-scope-fig .mg-fill-a{fill:var(--cobalt-lt);opacity:.17}
+.mg-scope-fig .mg-fill-b{fill:var(--cobalt-lt);opacity:.09}
+
+/* the scrub lights the key rows it has reached, overriding phase 1's
+   all-at-once reveal so the list tracks the drawing */
+.js .mg-scope.in .mg-scope-key li{opacity:.34;transition:opacity .4s var(--ease-out)}
+.js .mg-scope.in .mg-scope-key li.lit{opacity:1}
+@media (prefers-reduced-motion: reduce){
+  .js .mg-scope.in .mg-scope-key li{opacity:1}
+}

@@ -635,3 +635,272 @@
   statMeters();
   titleBlock();
 })();
+
+/* Current — motion graphics, phase 3 (v4)
+   The five studies approved from the motion sheet. Same contract as before:
+   read from the page, state nothing new, stay out of the accessibility tree.
+
+   The one thing phases 1 and 2 did not need is new wording. Three of these
+   carry short labels of their own, so every string sits in one table below,
+   in both languages, rather than being scattered through the drawings. */
+(function () {
+  'use strict';
+
+  var doc = document;
+  var AR = doc.documentElement.getAttribute('dir') === 'rtl';
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+  var T = AR ? {
+    typical: 'المعتاد', client: 'العميل', main: 'المقاول الرئيسي',
+    sub: 'مقاول', subLetters: ['أ', 'ب', 'ج'], seam: 'فاصل',
+    civil: 'مدني', steel: 'خرسانة وحديد', mep: 'كهروميكانيكا',
+    pitch: 'ملعب كرة قدم · 7,140 m2', times: '× الملعب',
+    commissioned: 'تم التشغيل'
+  } : {
+    typical: 'TYPICAL', client: 'CLIENT', main: 'MAIN CONTRACTOR',
+    sub: 'SUB', subLetters: ['A', 'B', 'C'], seam: 'seam',
+    civil: 'CIVIL', steel: 'STEEL', mep: 'MEP',
+    pitch: 'FOOTBALL PITCH · 7,140 m²', times: '× THE PITCH',
+    commissioned: 'COMMISSIONED'
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function node(markup) {
+    var t = doc.createElement('template');
+    t.innerHTML = markup.trim();
+    return t.content.firstChild;
+  }
+  function onSeen(el, cb) {
+    if (!('IntersectionObserver' in window)) { el.classList.add('in'); if (cb) cb(); return; }
+    new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        el.classList.add('in');
+        obs.unobserve(el);
+        if (cb) cb();
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' }).observe(el);
+  }
+
+  /* ---------- 01 one line of accountability ----------
+     Only on the services index, whose own headline is the claim this draws:
+     one team that answers for the whole job. */
+  function accountability() {
+    var grid = doc.querySelector('.svc-grid');
+    if (!grid || !/services/.test(location.pathname)) return;
+
+    var el = node(
+      '<div class="mg-acct" aria-hidden="true">' +
+      '<svg viewBox="0 0 520 212" fill="none" focusable="false">' +
+        '<text class="mg-t" x="4" y="13">' + esc(T.typical) + '</text>' +
+        '<rect data-pop style="--at:.1s" x="4" y="24" width="78" height="28" rx="1" class="mg-ln"/>' +
+        '<text class="mg-tf" text-anchor="middle" x="43" y="42">' + esc(T.client) + '</text>' +
+        '<path data-draw style="--at:.3s" class="mg-ln" d="M86 38h30"/>' +
+        '<rect data-pop style="--at:.45s" x="120" y="24" width="104" height="28" rx="1" class="mg-ln"/>' +
+        '<text class="mg-tf mg-tf-sm" text-anchor="middle" x="172" y="42">' + esc(T.main) + '</text>' +
+        '<path data-draw style="--at:.7s" class="mg-ln mg-soft seam" d="M228 38h22M250 38V12h30M250 38h30M250 38v26h30"/>' +
+        '<rect data-pop style="--at:1s" x="284" y="2" width="78" height="20" rx="1" class="mg-ln mg-soft"/>' +
+        '<text class="mg-t" text-anchor="middle" x="323" y="16">' + esc(T.sub + ' ' + T.subLetters[0]) + '</text>' +
+        '<rect data-pop style="--at:1.05s" x="284" y="28" width="78" height="20" rx="1" class="mg-ln mg-soft"/>' +
+        '<text class="mg-t" text-anchor="middle" x="323" y="42">' + esc(T.sub + ' ' + T.subLetters[1]) + '</text>' +
+        '<rect data-pop style="--at:1.1s" x="284" y="54" width="78" height="20" rx="1" class="mg-ln mg-soft"/>' +
+        '<text class="mg-t" text-anchor="middle" x="323" y="68">' + esc(T.sub + ' ' + T.subLetters[2]) + '</text>' +
+        '<g data-fade style="--at:1.35s">' +
+          '<text class="mg-t" x="374" y="16">' + esc(T.seam) + '</text>' +
+          '<text class="mg-t" x="374" y="42">' + esc(T.seam) + '</text>' +
+          '<text class="mg-t" x="374" y="68">' + esc(T.seam) + '</text>' +
+        '</g>' +
+        '<path data-draw style="--at:1.6s" class="mg-ln mg-soft" d="M4 104h512"/>' +
+        '<text class="mg-tl" x="4" y="128">CURRENT</text>' +
+        '<rect data-pop style="--at:1.9s" x="4" y="140" width="78" height="28" rx="1" class="mg-ln"/>' +
+        '<text class="mg-tf" text-anchor="middle" x="43" y="158">' + esc(T.client) + '</text>' +
+        '<path data-draw style="--at:2.1s" class="mg-live" d="M86 154h30"/>' +
+        '<rect data-pop style="--at:2.25s" x="120" y="140" width="104" height="28" rx="1" class="mg-live"/>' +
+        '<text class="mg-tl" text-anchor="middle" x="172" y="158">CURRENT</text>' +
+        '<path data-draw style="--at:2.45s" class="mg-live" d="M228 154h22"/>' +
+        '<g data-fade style="--at:2.65s">' +
+          '<rect x="250" y="140" width="266" height="28" rx="1" class="mg-live"/>' +
+          '<path class="mg-live" d="M338 140v28M427 140v28" opacity=".4"/>' +
+          '<text class="mg-tl" text-anchor="middle" x="294" y="158">' + esc(T.civil) + '</text>' +
+          '<text class="mg-tl" text-anchor="middle" x="382" y="158">' + esc(T.steel) + '</text>' +
+          '<text class="mg-tl" text-anchor="middle" x="471" y="158">' + esc(T.mep) + '</text>' +
+        '</g>' +
+        '<g data-fade style="--at:3s">' +
+          '<path class="mg-live" d="M250 186h266M250 180v12M516 180v12"/>' +
+        '</g>' +
+      '</svg></div>');
+    grid.parentNode.insertBefore(el, grid);
+    onSeen(el);
+  }
+
+  /* ---------- 02 scale comparator ----------
+     A pitch is 105 x 68 m, so 7,140 m2. The graphic only runs where the
+     published area is between a third of a pitch and four pitches: outside
+     that the two rectangles cannot share a scale without one of them leaving
+     the drawing, and a comparison you cannot draw to scale is not one worth
+     drawing. Arabic pages write the unit as "m2", so both spellings match. */
+  var PITCH = 7140;
+  function scaleComparator() {
+    var facts = doc.querySelector('.facts');
+    if (!facts) return;
+
+    var hit = null;
+    [].slice.call(facts.querySelectorAll('li')).some(function (li) {
+      var b = li.querySelector('b');
+      var lab = li.querySelector('span');
+      if (!b || !lab) return false;
+      var txt = (b.textContent || '').trim();
+      var m = /([\d][\d,]*)\s*(?:m²|m2)/.exec(txt);
+      if (!m) return false;
+      var val = parseInt(m[1].replace(/,/g, ''), 10);
+      if (!isFinite(val)) return false;
+      var ratio = val / PITCH;
+      if (ratio < 0.3 || ratio > 4) return false;
+      hit = { value: val, ratio: ratio, label: (lab.textContent || '').trim(), raw: txt };
+      return true;
+    });
+    if (!hit) return;
+
+    /* One scale for both rectangles. The pitch is drawn at 105 x 68 m with
+       1 m = 1.55px; the project keeps a 1.4:1 plan so the two read as areas
+       rather than as two unrelated shapes. */
+    var PX = 1.55;
+    var pw = 105 * PX, ph = 68 * PX;
+    var side = Math.sqrt(hit.value / 1.4);
+    var w = side * 1.4 * PX, h = side * PX;
+    var W = 520, H = 250;
+    var pcx = W / 2, pcy = 116;
+
+    function rect(cx, cy, rw, rh) {
+      return 'M' + (cx - rw / 2).toFixed(1) + ' ' + (cy - rh / 2).toFixed(1) +
+             'h' + rw.toFixed(1) + 'v' + rh.toFixed(1) + 'h-' + rw.toFixed(1) + 'z';
+    }
+    var el = node(
+      '<div class="mg-scale" aria-hidden="true">' +
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" fill="none" focusable="false">' +
+        '<path data-draw style="--at:.1s" class="mg-ln mg-soft" d="' + rect(pcx, pcy, pw, ph) + '"/>' +
+        '<path data-draw style="--at:.5s" class="mg-ln mg-soft" d="M' + pcx + ' ' + (pcy - ph / 2).toFixed(1) + 'v' + ph.toFixed(1) + '"/>' +
+        '<circle data-fade style="--at:.7s" cx="' + pcx + '" cy="' + pcy + '" r="13" class="mg-ln mg-soft"/>' +
+        '<text data-fade style="--at:.9s" class="mg-t" x="8" y="' + (pcy + ph / 2 + 20).toFixed(1) + '">' + esc(T.pitch) + '</text>' +
+        '<path data-draw style="--at:1.2s" class="mg-live" d="' + rect(pcx, pcy, w, h) + '"/>' +
+        '<g data-fade style="--at:2.1s">' +
+          '<text class="mg-tl" x="8" y="20">' + esc(hit.label + ' · ' + hit.raw) + '</text>' +
+          '<text class="mg-fig" x="8" y="' + (H - 8) + '">' + hit.ratio.toFixed(1) + '</text>' +
+          '<text class="mg-t" x="44" y="' + (H - 8) + '">' + esc(T.times) + '</text>' +
+        '</g>' +
+      '</svg></div>');
+    facts.parentNode.insertBefore(el, facts.nextSibling);
+    onSeen(el);
+  }
+
+  /* ---------- 03 the build, scrubbed ----------
+     Replaces the static sectional elevation on the homepage with an
+     isometric that assembles as the band scrolls past. One projection
+     throughout: a 12 x 8 plan on a 30 degree grid, base A(260,70) B(395,148)
+     C(305,200) D(170,122), wall tops 45 above each, ridge R1(215,31) to
+     R2(350,109) along the long axis, so the roof is a real gable.
+
+     The four-item key beside it is already on the page in both languages, so
+     the scrub lights those rather than introducing labels of its own. */
+  function isoScrub() {
+    var fig = doc.querySelector('.mg-scope-fig');
+    var scope = doc.querySelector('.mg-scope');
+    if (!fig || !scope) return;
+
+    fig.innerHTML =
+      '<svg viewBox="100 5 360 215" fill="none" aria-hidden="true" focusable="false">' +
+        '<g class="mg-iso-stage on"><path class="mg-ln mg-soft" d="M260 44L440 148L305 226L125 122Z"/></g>' +
+        '<g class="mg-iso-stage"><path class="mg-ln" d="M260 70L395 148L305 200L170 122Z"/>' +
+          '<path class="mg-ln" d="M170 122v8l135 78 90-52v-8"/></g>' +
+        '<g class="mg-iso-stage"><path class="mg-firm" d="M260 70V25M395 148V103M305 200V155M170 122V77"/>' +
+          '<path class="mg-ln" d="M260 25L395 103L305 155L170 77Z"/></g>' +
+        '<g class="mg-iso-stage"><path class="mg-ln" d="M260 25L215 31L350 109L395 103"/>' +
+          '<path class="mg-ln" d="M170 77L215 31M305 155L350 109"/>' +
+          '<path class="mg-firm" d="M215 31L350 109"/></g>' +
+        '<g class="mg-iso-stage"><path class="mg-live" d="M226 70L339 135"/>' +
+          '<path class="mg-live" d="M249 83v25M305 116v22"/>' +
+          '<circle cx="249" cy="110" r="4" class="mg-live-f"/>' +
+          '<circle cx="305" cy="140" r="4" class="mg-live-f"/></g>' +
+        '<g class="mg-iso-stage"><path d="M170 122L305 200L305 155L170 77Z" class="mg-fill-a"/>' +
+          '<path d="M305 200L395 148L395 103L305 155Z" class="mg-fill-b"/></g>' +
+      '</svg>';
+
+    var stages = [].slice.call(fig.querySelectorAll('.mg-iso-stage'));
+    var keys = [].slice.call(scope.querySelectorAll('.mg-scope-key li'));
+    /* stage 0 is the ground, so the four key rows map to stages 2 to 5 */
+    function apply(n) {
+      stages.forEach(function (g, i) { g.classList.toggle('on', i <= n); });
+      keys.forEach(function (li, i) { li.classList.toggle('lit', n >= i + 2); });
+    }
+    if (REDUCED.matches) { apply(stages.length - 1); return; }
+
+    var ticking = false;
+    function measure() {
+      ticking = false;
+      /* Progress is measured on the drawing itself, not the whole band: the
+         band also holds the five step cards, so keying on it left the build
+         unfinished when the drawing had long since passed. Zero as the figure
+         enters from the bottom, one as it reaches the top sixth. */
+      var r = fig.getBoundingClientRect();
+      var vh = innerHeight || 800;
+      var p = (vh - r.top) / (vh * 0.85);
+      p = Math.max(0, Math.min(1, p));
+      apply(Math.round(p * (stages.length - 1)));
+    }
+    addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(measure); }
+    }, { passive: true });
+    addEventListener('resize', measure, { passive: true });
+    measure();
+  }
+
+  /* ---------- 04 handed over running ----------
+     On the electromechanical page, where commissioning is the subject. */
+  function commissioning() {
+    if (!/service-mep/.test(location.pathname)) return;
+    var steps = doc.querySelector('.steps');
+    if (!steps) return;
+
+    var dots = '';
+    for (var i = 0; i < 5; i++) {
+      dots += '<circle data-pop style="--at:' + (2.3 + i * 0.15).toFixed(2) + 's" cx="' +
+              (110 + i * 75) + '" cy="118" r="5" class="mg-live-f"/>';
+    }
+    var el = node(
+      '<div class="mg-comm" aria-hidden="true">' +
+      '<svg viewBox="0 0 520 176" fill="none" focusable="false">' +
+        '<path data-draw style="--at:.1s" class="mg-firm" d="M60 160V70l200-44 200 44v90"/>' +
+        '<path data-draw style="--at:.8s" class="mg-ln" d="M60 160h400"/>' +
+        '<path data-draw style="--at:1s" class="mg-ln" d="M130 160V96M260 160V78M390 160V96"/>' +
+        '<path data-draw style="--at:1.5s" class="mg-live" d="M110 118h300"/>' +
+        dots +
+        '<g data-fade style="--at:3.2s">' +
+          '<path class="mg-live" d="M260 26v-12"/>' +
+          '<circle cx="260" cy="9" r="5" class="mg-live-f"/>' +
+          '<text class="mg-tl" x="278" y="14">' + esc(T.commissioned) + '</text>' +
+        '</g>' +
+      '</svg></div>');
+    steps.parentNode.insertBefore(el, steps);
+    onSeen(el);
+  }
+
+  /* ---------- 05 figures as dimensions ----------
+     End ticks on the two percentage meters phase 2 drew, so the figure
+     arrives measured rather than announced. */
+  function dimensionTicks() {
+    [].slice.call(doc.querySelectorAll('.stats .stat .bar.mg-meter')).forEach(function (bar) {
+      if (bar.querySelector('.mg-tick')) return;
+      var a = doc.createElement('span'); a.className = 'mg-tick a';
+      var b = doc.createElement('span'); b.className = 'mg-tick b';
+      bar.appendChild(a); bar.appendChild(b);
+    });
+  }
+
+  accountability();
+  scaleComparator();
+  isoScrub();
+  commissioning();
+  dimensionTicks();
+})();
