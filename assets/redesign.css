@@ -8,6 +8,8 @@
    Manrope and IBM Plex Sans are variable (one file covers every weight used).
    IBM Plex Sans Arabic has no variable build, so its four weights are static.
    All three families are SIL OFL 1.1, which permits self-hosting. */
+@font-face{font-family:'Plex Arabic Fallback';font-weight:400 600;src:local('Geeza Pro');size-adjust:104%}
+@font-face{font-family:'Plex Arabic Fallback';font-weight:700 800;src:local('Geeza Pro Bold'),local('GeezaPro-Bold'),local('Geeza Pro');size-adjust:96%}
 @font-face{font-family:'Manrope';font-style:normal;font-weight:500 800;font-display:swap;src:url(fonts/manrope-latin-ext-500-800.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
 @font-face{font-family:'Manrope';font-style:normal;font-weight:500 800;font-display:swap;src:url(fonts/manrope-latin-500-800.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 @font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400 600;font-display:swap;src:url(fonts/ibm-plex-sans-latin-ext-400-600.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
@@ -438,7 +440,7 @@ footer .col a:not(.btn):hover{color:#fff}
 /* ============ ARABIC / RTL ============ */
 [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] textarea,[dir="rtl"] select,[dir="rtl"] button,
 [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3,[dir="rtl"] h4,[dir="rtl"] h5{
-  font-family:'IBM Plex Sans Arabic','Cairo',system-ui,sans-serif}
+  font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback','Cairo',system-ui,sans-serif}
 [dir="rtl"] body{line-height:1.85}
 [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3,[dir="rtl"] h4,[dir="rtl"] h5,
 [dir="rtl"] .eyebrow,[dir="rtl"] .kicker,[dir="rtl"] .trust-lab,[dir="rtl"] .role,[dir="rtl"] .tag,
@@ -659,7 +661,7 @@ footer .col a:not(.btn):hover{color:#fff}
 /* on navy grounds the same figure has to invert, or it renders near-black on navy */
 .hero .fig,.page-hero .fig,.approach .fig,.cta .fig,.cta-strip .fig,.vm .fig{color:#fff}
 /* Manrope carries no Arabic, so RTL keeps the Arabic face and leans on weight instead */
-[dir="rtl"] .fig{font-family:'IBM Plex Sans Arabic','Cairo',system-ui,sans-serif;letter-spacing:0}
+[dir="rtl"] .fig{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback','Cairo',system-ui,sans-serif;letter-spacing:0}
 
 /* --- accessibility: skip link (WCAG 2.4.1 Bypass Blocks) -------------------
    Off-screen until focused, then lands as a solid ink chip over the utility
@@ -883,7 +885,7 @@ main:focus{outline:none}
 .mg-scope-key .k{font-weight:800;font-size:11.5px;letter-spacing:.14em;color:var(--silver);
   font-variant-numeric:tabular-nums;padding-top:3px;flex:none}
 .mg-scope-key li:last-child .k{color:var(--cobalt-lt)}
-[dir="rtl"] .mg-scope-key li{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+[dir="rtl"] .mg-scope-key li{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif}
 [dir="rtl"] .mg-scope-key .k{letter-spacing:0;direction:ltr}
 @media(max-width:860px){
   .mg-scope{grid-template-columns:1fr;gap:22px;margin:26px 0 36px}
@@ -1007,7 +1009,7 @@ main:focus{outline:none}
   align-items:center;gap:12px}
 .mg-folio .k{font-family:Manrope,sans-serif;font-weight:600;font-size:12.5px;
   color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-[dir="rtl"] .mg-folio .k{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+[dir="rtl"] .mg-folio .k{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif}
 .mg-folio .b{height:7px;background:var(--accent-tint);position:relative}
 .mg-folio .b i{position:absolute;inset-block:0;inset-inline-start:0;
   width:calc(var(--w) * 100%);background:var(--accent);
@@ -1045,11 +1047,11 @@ main:focus{outline:none}
   font-size:10px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--on-navy-mute);margin-bottom:5px}
 [dir="rtl"] .mg-tblock .k{letter-spacing:0;text-transform:none;
-  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+  font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif}
 .mg-tblock b{display:block;font-family:Manrope,sans-serif;font-weight:600;
   font-size:12.5px;color:var(--on-navy);overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap}
-[dir="rtl"] .mg-tblock b{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+[dir="rtl"] .mg-tblock b{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif}
 @media(max-width:620px){
   .mg-tblock{grid-template-columns:1fr}
   .mg-tblock .cell + .cell{border-inline-start:0;
@@ -1103,7 +1105,7 @@ main:focus{outline:none}
 .mg-scope-fig .mg-iso-label{font-family:Manrope,sans-serif;font-weight:700;
   font-size:10px;letter-spacing:.16em;fill:var(--on-navy-mute)}
 [dir="rtl"] .mg-scope-fig .mg-iso-label{letter-spacing:0;
-  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+  font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif}
 
 /* --- 04 commissioning sequence (MEP service page) ------------------------ */
 .mg-comm{margin:24px auto 30px;max-width:620px;width:100%}
@@ -1171,7 +1173,7 @@ main:focus{outline:none}
 .mg-fig{font-family:Manrope,sans-serif;font-size:26px;font-weight:800;
   fill:var(--cobalt);letter-spacing:-.02em}
 [dir="rtl"] .mg-t,[dir="rtl"] .mg-tf,[dir="rtl"] .mg-tl{
-  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;letter-spacing:0}
+  font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;letter-spacing:0}
 
 /* the isometric sits on ink navy, so its strokes invert */
 .mg-scope-fig .mg-ln{stroke:rgba(255,255,255,.5)}
@@ -1255,7 +1257,7 @@ main:focus{outline:none}
   border-radius:var(--r-control);padding:5px 11px;opacity:.5;
   transition:opacity .4s var(--ease-out),color .4s var(--ease-out),border-color .4s var(--ease-out)}
 .svc-chip.on{opacity:1;color:var(--cobalt);border-color:var(--cobalt)}
-[dir="rtl"] .svc-chip{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+[dir="rtl"] .svc-chip{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif}
 @media (prefers-reduced-motion: reduce){
   .mg-svc .svc-run{opacity:.85;transition:none}
   .svc-chip{transition:none}
@@ -1278,7 +1280,7 @@ main:focus{outline:none}
   font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13.5px;color:var(--muted)}
 .svc-legend li::before{content:counter(k);font-family:Manrope,sans-serif;
   font-weight:800;font-size:11px;color:var(--cobalt);flex:none;min-width:12px}
-[dir="rtl"] .svc-legend li{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+[dir="rtl"] .svc-legend li{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif}
 .mg-svc-plain svg{max-width:520px}
 
 /* ============ HIT TARGETS AND LEGIBILITY ====================================
@@ -1357,7 +1359,7 @@ main:focus{outline:none}
 .btn-text:hover{color:var(--ink)}
 .btn-text:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-control)}
 .form-ok:focus{outline:none}
-[dir="rtl"] .qx-multi legend,[dir="rtl"] .qx-more summary,[dir="rtl"] .qx-sep,[dir="rtl"] .btn-text{font-family:'IBM Plex Sans Arabic',sans-serif;letter-spacing:0}
+[dir="rtl"] .qx-multi legend,[dir="rtl"] .qx-more summary,[dir="rtl"] .qx-sep,[dir="rtl"] .btn-text{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',sans-serif;letter-spacing:0}
 /* type floor for the quote card, every screen: fields 16px (also stops iOS
    zoom-on-focus), labels 13px, small print never under 12.5px. Arabic glyphs
    read smaller at the same px, so RTL gets +1px on the small sizes. */
@@ -1436,8 +1438,8 @@ main:focus{outline:none}
 .mnav.open .mnav-g:nth-child(3){transition-delay:.27s}
 .mnav.open .mnav-pdf{transition-delay:.32s}
 @media (prefers-reduced-motion:reduce){.mnav .mnav-search,.mnav .mnav-g,.mnav .mnav-pdf{opacity:1;transform:none;transition:none}}
-[dir="rtl"] .mnav-g h2,[dir="rtl"] .mnav-list a,[dir="rtl"] .mnav-results b,[dir="rtl"] .mnav-count,[dir="rtl"] .mnav-all{font-family:'IBM Plex Sans Arabic',sans-serif;letter-spacing:0}
-[dir="rtl"] .mnav-search input{font-family:'IBM Plex Sans Arabic',sans-serif}
+[dir="rtl"] .mnav-g h2,[dir="rtl"] .mnav-list a,[dir="rtl"] .mnav-results b,[dir="rtl"] .mnav-count,[dir="rtl"] .mnav-all{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',sans-serif;letter-spacing:0}
+[dir="rtl"] .mnav-search input{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',sans-serif}
 [dir="rtl"] .mnav-g h2{font-size:14px}
 [dir="rtl"] .mnav-list a{font-size:18px}
 [dir="rtl"] .mnav-search input[type=search]{direction:rtl}
@@ -1460,7 +1462,7 @@ main:focus{outline:none}
 .home .hero-cta .btn{min-height:52px;padding-inline:24px}
 @media(max-width:1000px){.home .hero{min-height:max(560px,calc(100svh - 110px - 70px))}}
 @media(max-width:520px){.home .hero-cta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .home .hero-cta .btn{justify-content:center;padding-inline:10px;font-size:15px;min-height:50px;text-align:center}
+  .home .hero-cta .btn{justify-content:center;padding-inline:10px;font-size:15px;min-height:52px;text-align:center}
   .home .hero .wrap{padding-top:96px;padding-bottom:36px}}
 
 /* more air, bigger headlines */
@@ -1877,7 +1879,7 @@ body:not(.home) .sec-head h2{font-size:clamp(32px,5vw,64px);line-height:1.05;let
 .np-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:18px;font-family:Manrope,sans-serif;font-weight:600;font-size:14px;color:var(--on-navy-mute)}
 .np-foot a{color:#fff;display:inline-flex;align-items:center;min-height:44px}
 .np-foot a:hover{color:var(--cobalt-lt)}
-[dir="rtl"] .np-foot{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:15px}
+[dir="rtl"] .np-foot{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;font-size:15px}
 [dir="rtl"] .np-copy h2{letter-spacing:0;line-height:1.2}
 @supports (animation-timeline:view()){
   @media (prefers-reduced-motion:no-preference){
@@ -1902,7 +1904,7 @@ body:not(.home) .sec-head h2{font-size:clamp(32px,5vw,64px);line-height:1.05;let
   transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
 .jump a:hover{border-color:var(--accent);color:var(--accent)}
 .jump a.on{background:var(--ink);border-color:var(--ink);color:#fff}
-[dir="rtl"] .jump a{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:15px}
+[dir="rtl"] .jump a{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;font-size:15px}
 .jump-target{scroll-margin-top:calc(var(--hdr-h,72px) + 84px)}
 @media (max-width:760px){
   .jump-track{margin-inline:calc(var(--gutter,20px) * -1);padding-inline:var(--gutter,20px);scroll-padding-inline:var(--gutter,20px)}
@@ -1944,7 +1946,7 @@ footer .office b{display:block}
 @media (max-width:520px){#pgrid .proj.feat{aspect-ratio:4/5}#pgrid .proj.feat .info h3{font-size:28px}}
 [dir="rtl"] #pgrid .proj.feat .info h3{letter-spacing:0;line-height:1.3}
 .pcount{font-family:Manrope,sans-serif;font-weight:600;font-size:14px;color:var(--muted);margin:28px 0 16px}
-[dir="rtl"] .pcount{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:15px}
+[dir="rtl"] .pcount{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;font-size:15px}
 ::view-transition-group(*){animation-duration:.55s;animation-timing-function:cubic-bezier(.16,1,.3,1)}
 
 /* ==========================================================================
@@ -1966,7 +1968,7 @@ footer .office b{display:block}
 .map-main{aspect-ratio:1000/492}
 .map-detail figcaption{font-family:Manrope,sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--silver);
   padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.14)}
-[dir="rtl"] .map-detail figcaption{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;letter-spacing:0;text-transform:none;font-size:14px;direction:rtl;text-align:right}
+[dir="rtl"] .map-detail figcaption{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;letter-spacing:0;text-transform:none;font-size:14px;direction:rtl;text-align:right}
 .map-detail-in{position:relative;aspect-ratio:640/420}
 .m-grat path,.d-grid{stroke:rgba(255,255,255,.07);stroke-width:1}
 .m-land{stroke:rgba(255,255,255,.78);stroke-width:1.4;fill:rgba(122,157,240,.07);stroke-linejoin:round}
@@ -1975,13 +1977,13 @@ footer .office b{display:block}
 .d-nile{stroke:var(--cobalt-lt);stroke-width:1.4;stroke-linecap:round;opacity:.75}
 .ctry{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);font-family:Manrope,sans-serif;font-weight:700;
   font-size:clamp(10px,1.1vw,13px);letter-spacing:.16em;color:rgba(255,255,255,.42);white-space:nowrap;pointer-events:none}
-[dir="rtl"] .ctry{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;letter-spacing:0;font-size:clamp(11px,1.2vw,14px)}
+[dir="rtl"] .ctry{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;letter-spacing:0;font-size:clamp(11px,1.2vw,14px)}
 /* pins */
 .pin{position:absolute;left:var(--x);top:var(--y);width:0;height:0;z-index:1}
 .pin i{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--cobalt-lt);box-shadow:0 0 0 4px rgba(122,157,240,.22)}
 .pin b{position:absolute;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;
   font-family:Manrope,sans-serif;font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 8px rgba(10,14,30,.9);top:-10px}
-[dir="rtl"] .pin b{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:13.5px}
+[dir="rtl"] .pin b{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;font-size:13.5px}
 .pin em{font-style:normal;font-family:Manrope,sans-serif;font-weight:800;font-size:11.5px;line-height:18px;min-width:18px;height:18px;padding:0 5px;
   box-sizing:border-box;text-align:center;border-radius:9px;background:#fff;color:var(--ink);text-shadow:none}
 .pin-r b{left:14px}
@@ -1999,7 +2001,7 @@ footer .office b{display:block}
 .map-c ul{list-style:none;margin:0;padding:0}
 .map-c ul li{display:grid;grid-template-columns:minmax(120px,38%) 1fr;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);transition:background .3s var(--ease)}
 .map-c ul li b{font-family:Manrope,sans-serif;font-weight:700;font-size:14px;color:#fff}
-[dir="rtl"] .map-c ul li b{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:15px}
+[dir="rtl"] .map-c ul li b{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;font-size:15px}
 .map-c ul li span{font-size:15px;line-height:1.55;color:var(--on-navy)}
 .map-c ul li a{color:var(--on-navy);text-decoration:underline;text-decoration-color:rgba(255,255,255,.25);text-underline-offset:3px;display:block;width:fit-content;padding:4px 0}
 .map-c ul li a:hover{color:#fff;text-decoration-color:var(--cobalt-lt)}
@@ -2062,7 +2064,7 @@ footer .office b{display:block}
 .om-ring{fill:none;stroke:var(--accent);stroke-width:1.5;opacity:.5;transform-box:fill-box;transform-origin:center;animation:omPing 2.6s var(--ease-out) 1s 3}
 @keyframes omPing{0%{transform:scale(.4);opacity:.8}100%{transform:scale(1.6);opacity:0}}
 .ostat{display:flex;align-items:center;gap:8px;font-family:Manrope,sans-serif;font-weight:600;font-size:14px;color:var(--muted);margin:-6px 0 16px}
-[dir="rtl"] .ostat{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14.5px}
+[dir="rtl"] .ostat{font-family:'IBM Plex Sans Arabic','Plex Arabic Fallback',system-ui,sans-serif;font-size:14.5px}
 .ostat i{width:8px;height:8px;border-radius:50%;background:#A6ABB8;flex:none}
 .ostat.open{color:#1E7A3C}
 .ostat.open i{background:#2FB45A;box-shadow:0 0 0 4px rgba(47,180,90,.18)}
@@ -2183,3 +2185,117 @@ footer .office b{display:block}
     .svc-tiles .svc .im img{scale:1.14;animation:homePara linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
   }
 }
+
+/* ==========================================================================
+   Clients (2026-11): drifting logo rows, linked logos, the work behind them
+   ========================================================================== */
+.logo-wall .cell,.lw-row .cell{position:relative}
+.cell.has-work img{filter:none;opacity:1}
+.cw-tag{position:absolute;top:8px;inset-inline-end:8px;font-family:Manrope,sans-serif;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-tint);border-radius:999px;padding:3px 8px;line-height:1.3}
+[dir="rtl"] .cw-tag{font-family:inherit;font-size:12px;letter-spacing:0}
+.lw-rows{display:grid;gap:14px;margin-inline:calc(50% - 50vw);overflow:clip;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.lw-row{display:flex;direction:ltr}
+.lw-track{display:flex;gap:14px;padding-inline-end:14px;flex:none;animation:lwDrift var(--dur,60s) linear infinite}
+.lw-row.rev .lw-track{animation-direction:reverse}
+.lw-rows:hover .lw-track,.lw-rows:focus-within .lw-track{animation-play-state:paused}
+.lw-track .cell{flex:none;width:clamp(150px,16vw,200px);height:clamp(84px,8vw,104px);display:flex;align-items:center;justify-content:center;
+  background:#fff;border:1px solid var(--line);border-radius:var(--r-surface);padding:16px}
+.lw-track .cell img{max-height:52px;max-width:100%;object-fit:contain;filter:grayscale(1);opacity:.62;transition:filter .3s,opacity .3s}
+.lw-track .cell:hover img,.lw-track .cell.has-work img{filter:none;opacity:1}
+.lw-track a.cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@keyframes lwDrift{to{transform:translateX(-50%)}}
+.client-work{display:grid;grid-auto-flow:column;grid-auto-columns:82%;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  margin-inline:calc(var(--gutter,20px) * -1);padding:4px var(--gutter,20px) 8px;scroll-padding-inline:var(--gutter,20px)}
+.client-work::-webkit-scrollbar{display:none}
+.cw{scroll-snap-align:start;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:var(--r-surface);overflow:clip;color:var(--ink);
+  transition:transform .35s var(--ease-out),box-shadow .35s var(--ease-out)}
+.cw:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.cw-im{aspect-ratio:16/10;overflow:clip}
+.cw-im img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease-out)}
+.cw:hover .cw-im img{transform:scale(1.05)}
+.cw-bd{position:relative;padding:44px 22px 22px;display:flex;flex-direction:column;flex:1}
+.cw-logo{position:absolute;top:-30px;inset-inline-start:20px;width:96px;height:60px;background:#fff;border-radius:12px;box-shadow:0 8px 22px -10px rgba(20,24,52,.35);
+  display:flex;align-items:center;justify-content:center;padding:8px}
+.cw-logo img{max-width:100%;max-height:100%;object-fit:contain}
+.cw-client{font-family:Manrope,sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+[dir="rtl"] .cw-client{font-family:inherit;font-size:14px;letter-spacing:0}
+.cw h3{font-size:clamp(20px,1.8vw,23px);line-height:1.2;margin:6px 0 14px}
+.cw-go{margin-top:auto;color:var(--accent);font-family:Manrope,sans-serif;font-weight:700;font-size:14.5px;min-height:24px}
+[dir="rtl"] .cw-go{font-family:inherit}
+@media (min-width:760px){.client-work{grid-auto-columns:calc((100% - 32px)/3);margin-inline:0;padding-inline:0}}
+@media (min-width:1100px){.client-work{grid-auto-flow:row;grid-template-columns:repeat(5,1fr);grid-auto-columns:auto;overflow:visible}.cw h3{font-size:19px}}
+@media (prefers-reduced-motion:reduce){.lw-track{animation:none}.cw,.cw-im img{transition:none}}
+
+/* ==========================================================================
+   Service pages (2026-11): vertical delivery steps, expanding proof strip
+   ========================================================================== */
+.detail .steps.steps-v{display:block;margin:clamp(20px,3vw,32px) 0 clamp(28px,4vw,44px);position:relative}
+.detail .steps-v::before,.detail .steps-v::after{content:"";position:absolute;inset-inline-start:7px;top:12px;bottom:12px;width:2px;border-radius:2px;background:var(--line-2);display:block;transform:none;animation:none}
+.detail .steps-v::after{background:var(--accent);transform-origin:top;transform:scaleY(var(--p,0))}
+.js .detail .steps-v .step,.detail .steps-v .step{border-top:none;padding:0 0 clamp(26px,3.4vw,38px);padding-inline-start:44px;opacity:.4;transform:none;transition:opacity .5s var(--ease-out)}
+.detail .steps-v .step:last-child{padding-bottom:0}
+.js .detail .steps-v .step.on,.detail .steps-v .step.on{opacity:1}
+.js .detail .steps-v .step::before,.detail .steps-v .step::before{top:4px;left:auto;inset-inline-start:0;width:16px;height:16px;z-index:1;transform:none;
+  background:var(--paper);border:3px solid var(--line-2);box-shadow:none;transition:border-color .4s var(--ease),box-shadow .4s var(--ease)}
+.detail .steps-v .step.on::before{border-color:var(--accent);background:#fff;box-shadow:0 0 0 6px var(--accent-tint)}
+.detail .steps-v .step h3{font-size:clamp(19px,1.8vw,22px);margin:6px 0 8px}
+.detail .steps-v .step p{font-size:16px;line-height:1.65;color:var(--ink-2,#3A3F5A);max-width:60ch}
+.detail .steps-v .step .n{font-size:13px}
+[dir="rtl"] .detail .steps-v .step .n{font-size:14px;letter-spacing:0}
+/* proof strip */
+.proof-strip{display:grid;grid-auto-flow:column;grid-auto-columns:84%;grid-template-columns:none;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  margin-inline:calc(var(--gutter,20px) * -1);padding:4px var(--gutter,20px) 8px;scroll-padding-inline:var(--gutter,20px)}
+.proof-strip::-webkit-scrollbar{display:none}
+.proof-strip .proj{scroll-snap-align:start;aspect-ratio:4/5}
+.proof-strip .proj h3{font-size:clamp(21px,2vw,26px);line-height:1.15}
+.proof-strip .proj .loc{font-size:14.5px;color:rgba(255,255,255,.86)}
+@media (min-width:760px){
+  .proof-strip{display:flex;overflow:visible;margin-inline:0;padding:0;gap:clamp(14px,1.6vw,20px)}
+  .proof-strip .proj{flex:1 1 0;min-width:0;aspect-ratio:auto;height:clamp(420px,42vw,560px);transition:flex-grow .7s var(--ease-out)}
+  .proof-strip:hover .proj{flex-grow:.8}
+  .proof-strip .proj:hover,.proof-strip .proj:focus-visible{flex-grow:1.7}
+}
+@media (prefers-reduced-motion:reduce){.proof-strip .proj{transition:none}.proof-strip:hover .proj,.proof-strip .proj:hover{flex-grow:1}}
+
+/* Type floor v3 (2026-11): no visible label under 13px on any screen */
+.trust-lab,.mg-scope-key .k,.step .n,.proj .tag,.qx-sep,.cta-card .fine,.mbar a{font-size:13px}
+[dir="rtl"] .trust-lab,[dir="rtl"] .mg-scope-key .k,[dir="rtl"] .step .n,[dir="rtl"] .proj .tag,[dir="rtl"] .qx-sep,[dir="rtl"] .cta-card .fine,[dir="rtl"] .mbar a{font-size:14px;letter-spacing:0}
+.cw-tag,.bio .role{font-size:13px}
+[dir="rtl"] .cw-tag,[dir="rtl"] .bio .role{font-size:14px;letter-spacing:0}
+.apply-or a{display:inline-block;padding:10px 0}
+
+/* ==========================================================================
+   Form controls, one size (2026-11): fields, dropdowns and buttons in the
+   quote form and beside it share a single 52px height and padding.
+   ========================================================================== */
+form input:not([type=hidden]):not([type=checkbox]):not([type=radio]),form select{box-sizing:border-box;height:52px;min-height:52px;padding:0 14px;line-height:1.2;font-size:16px}
+form select{-webkit-appearance:none;appearance:none;padding-inline-end:42px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23565B76' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;background-size:12px 8px}
+[dir="rtl"] form select{background-position:left 16px center}
+form textarea{box-sizing:border-box;padding:13px 14px;font-size:16px;line-height:1.5}
+form .btn,.cta-card .btn,.cta-info .btn,.contact-quick .btn{box-sizing:border-box;min-height:52px;height:52px;padding-block:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:16px;line-height:1.2}
+form summary{min-height:52px}
+/* every button on the site, one height */
+.btn{min-height:52px;padding-block:0;line-height:1.2;box-sizing:border-box}
+.btn.btn-sm{min-height:44px}
+form details>summary,form summary.qx-more{height:52px;min-height:52px}
+.mnav-foot .btn{height:52px;min-height:52px}
+
+/* Accessibility pass (2026-11) */
+img[width][height]{height:auto}
+.brand img[width],.foot-logo[width]{width:auto}
+.mbar a.wa,.mbar a.wa svg{color:#063d1c}
+/* not-yet-reached steps dim by colour, not opacity, so their text keeps 4.5:1 */
+.js .jtl.jtl-v .jt,.jtl.jtl-v .jt,.js .detail .steps-v .step,.detail .steps-v .step{opacity:1}
+.js .jtl.jtl-v .jt:not(.on) .yr,.js .jtl.jtl-v .jt:not(.on) p,
+.js .detail .steps-v .step:not(.on) h3,.js .detail .steps-v .step:not(.on) p,.js .detail .steps-v .step:not(.on) .n{color:#676C84;transition:color .5s var(--ease-out)}
+.jtl.jtl-v .yr,.jtl.jtl-v .jt p,.detail .steps-v .step h3,.detail .steps-v .step p{transition:color .5s var(--ease-out)}
+
+/* Layout stability (2026-11): the logo strip is one clipped row before the
+   script turns it into the moving marquee, so nothing below it moves */
+.trust .logo-row{display:flex;flex-wrap:nowrap;overflow:hidden;gap:0;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.trust .logo-row .cell{flex:none;height:64px;width:clamp(128px,13vw,176px);padding:8px 14px}

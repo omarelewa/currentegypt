@@ -2044,8 +2044,15 @@ function svcFallbackAnchor(doc) {
   if (!main || body.classList.contains('home')) return;
   var hero = main.querySelector('.page-hero');
   if (!hero) return;
-  var items = [];
-  [].slice.call(main.querySelectorAll('h2')).forEach(function (h) {
+  var items = [], track, pre = main.querySelector('nav.jump');
+  if (pre) {
+    /* chips already in the page (written at build time): just wire them up */
+    track = pre.querySelector('.jump-track');
+    [].slice.call(track.querySelectorAll('a')).forEach(function (a) {
+      var h = doc.getElementById(a.getAttribute('href').slice(1));
+      if (h) items.push({ h: h, a: a });
+    });
+  } else [].slice.call(main.querySelectorAll('h2')).forEach(function (h) {
     if (h.closest('.page-hero, .cta, .cta-strip, form, aside, .next-proj')) return;
     var t = h.textContent.trim();
     if (/[.?!؟]$/.test(t)) return;
@@ -2059,12 +2066,13 @@ function svcFallbackAnchor(doc) {
   });
   if (items.length < 3) return;
 
+  if (!pre) {
   var ar = (doc.documentElement.lang || '').indexOf('ar') === 0;
   var nav = doc.createElement('nav');
   nav.className = 'jump';
   nav.setAttribute('aria-label', ar ? 'في هذه الصفحة' : 'On this page');
   var wrap = doc.createElement('div'); wrap.className = 'wrap';
-  var track = doc.createElement('div'); track.className = 'jump-track';
+  track = doc.createElement('div'); track.className = 'jump-track';
   items.forEach(function (it) {
     var a = doc.createElement('a');
     a.href = '#' + it.h.id; a.textContent = it.label;
@@ -2073,6 +2081,7 @@ function svcFallbackAnchor(doc) {
   });
   wrap.appendChild(track); nav.appendChild(wrap);
   hero.parentNode.insertBefore(nav, hero.nextSibling);
+  }
 
   /* stay under the header, and take its place while it steps aside */
   var hdr = doc.getElementById('hdr') || doc.querySelector('.hdr');
@@ -2234,14 +2243,14 @@ function svcFallbackAnchor(doc) {
   var items = [].slice.call(jtl.querySelectorAll('.jt'));
   if (items.length < 3) return;
   var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
-  var list = doc.createElement('div');
-  list.className = 'jt-list';
-  items.forEach(function (it) { list.appendChild(it); });
-  var now = doc.createElement('div');
-  now.className = 'jt-now';
-  now.setAttribute('aria-hidden', 'true');
-  now.innerHTML = '<span class="jt-now-y"></span><span class="jt-now-k"></span>';
-  jtl.appendChild(now); jtl.appendChild(list);
+  var list = jtl.querySelector('.jt-list'), now = jtl.querySelector('.jt-now');
+  if (!list) {
+    list = doc.createElement('div'); list.className = 'jt-list';
+    items.forEach(function (it) { list.appendChild(it); });
+    now = doc.createElement('div'); now.className = 'jt-now'; now.setAttribute('aria-hidden', 'true');
+    now.innerHTML = '<span class="jt-now-y"></span><span class="jt-now-k"></span>';
+    jtl.appendChild(now); jtl.appendChild(list);
+  }
   jtl.classList.add('jtl-v');
   var yEl = now.firstChild, kEl = now.lastChild, cur = -2;
   var pad = function (n) { return (n < 10 ? '0' : '') + n; };
@@ -2289,4 +2298,57 @@ function svcFallbackAnchor(doc) {
     b.classList.add('bio-v');
     if (i % 2) b.classList.add('bio-flip');
   });
+})();
+
+/* ==========================================================================
+   Clients (2026-11): the logo wall becomes two slow rows drifting in
+   opposite directions. They pause under the pointer or keyboard focus;
+   with reduced motion the plain grid stays.
+   ========================================================================== */
+(function logoDrift() {
+  var doc = document, wall = doc.querySelector('.logo-wall');
+  if (!wall) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var cells = [].slice.call(wall.children);
+  if (cells.length < 8) return;
+  var half = Math.ceil(cells.length / 2), rows = doc.createElement('div');
+  rows.className = 'lw-rows';
+  [cells.slice(0, half), cells.slice(half)].forEach(function (set, r) {
+    var row = doc.createElement('div'); row.className = 'lw-row' + (r ? ' rev' : '');
+    var track = doc.createElement('div'); track.className = 'lw-track';
+    set.forEach(function (c) { c.classList.remove('reveal'); c.classList.add('in'); track.appendChild(c); });
+    set.forEach(function (c) {
+      var k = c.cloneNode(true); k.setAttribute('aria-hidden', 'true');
+      if (k.tagName === 'A') k.tabIndex = -1;
+      track.appendChild(k);
+    });
+    track.style.setProperty('--dur', (set.length * 4.2) + 's');
+    row.appendChild(track); rows.appendChild(row);
+  });
+  wall.parentNode.replaceChild(rows, wall);
+})();
+
+/* ==========================================================================
+   Service pages, how we deliver it (2026-11): the steps run down a line
+   that fills as you read, and each step lights as the line reaches it.
+   ========================================================================== */
+(function deliverSteps() {
+  var doc = document, el = doc.querySelector('.detail .steps');
+  if (!el) return;
+  var items = [].slice.call(el.querySelectorAll('.step'));
+  if (items.length < 2) return;
+  el.classList.add('steps-v');
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.style.setProperty('--p', 1); items.forEach(function (s) { s.classList.add('on'); }); return;
+  }
+  var q = false;
+  var measure = function () {
+    q = false;
+    var line = innerHeight * 0.6, r = el.getBoundingClientRect();
+    el.style.setProperty('--p', Math.max(0, Math.min(1, (line - r.top) / r.height)).toFixed(4));
+    items.forEach(function (s) { s.classList.toggle('on', s.getBoundingClientRect().top + 10 < line); });
+  };
+  addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(measure); } }, { passive: true });
+  addEventListener('resize', measure, { passive: true });
+  measure();
 })();
