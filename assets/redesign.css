@@ -2024,3 +2024,50 @@ footer .office b{display:block}
 }
 [dir="rtl"] .pin b,[dir="rtl"] .ctry{direction:rtl}
 [dir="rtl"] .pin-l b{flex-direction:row}
+
+/* ==========================================================================
+   Contact polish (2026-11): bigger heading, the three steps arrive along a
+   line that draws between them, the quote card shows progress and lifts
+   while you type, offices carry a pinned outline and a live open line.
+   ========================================================================== */
+.cta-inner>.reveal>h2{font-size:clamp(32px,4.4vw,56px);line-height:1.05;letter-spacing:-.035em}
+[dir="rtl"] .cta-inner>.reveal>h2{letter-spacing:0;line-height:1.25}
+.qsteps{position:relative}
+.qsteps::before{content:"";position:absolute;inset-inline-start:14px;top:20px;bottom:20px;width:2px;background:var(--line-2);transform-origin:top;border-radius:2px}
+.qstep{position:relative}
+.qstep .n{position:relative;z-index:1}
+.qstep b{font-size:16px}
+.qstep span{font-size:15px;line-height:1.5}
+.js .reveal .qsteps::before{transform:scaleY(0)}
+.js .reveal.in .qsteps::before{transform:none;transition:transform 1.3s var(--ease-out) .35s}
+.js .reveal .qstep{opacity:0;transform:translateY(10px)}
+.js .reveal.in .qstep{opacity:1;transform:none;transition:opacity .6s var(--ease-out),transform .7s var(--ease-out)}
+.js .reveal.in .qstep:nth-child(1){transition-delay:.3s}
+.js .reveal.in .qstep:nth-child(2){transition-delay:.75s}
+.js .reveal.in .qstep:nth-child(3){transition-delay:1.2s}
+/* quote card */
+.cta-card{position:relative;overflow:clip;transition:box-shadow .4s var(--ease),transform .4s var(--ease-out)}
+.cta-card:focus-within{box-shadow:0 30px 70px -28px rgba(12,15,38,.45)}
+.qprog{position:absolute;inset:0 0 auto 0;height:4px;background:var(--line)}
+.qprog i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left;transform:scaleX(var(--p,0));transition:transform .5s var(--ease-out),background .4s var(--ease)}
+[dir="rtl"] .qprog i{transform-origin:right}
+.qprog.done i{background:#2FB45A}
+/* offices */
+.office-card{position:relative}
+.office-card h3,.office-card .addr{padding-inline-end:104px}
+.omap{position:absolute;top:22px;inset-inline-end:22px;width:88px}
+.omap svg{display:block;width:100%;height:auto}
+.om-land{stroke:var(--ink);stroke-opacity:.55;stroke-width:1.2;fill:var(--accent-tint);stroke-linejoin:round}
+.om-dot{fill:var(--accent)}
+.om-ring{fill:none;stroke:var(--accent);stroke-width:1.5;opacity:.5;transform-box:fill-box;transform-origin:center;animation:omPing 2.6s var(--ease-out) 1s 3}
+@keyframes omPing{0%{transform:scale(.4);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+.ostat{display:flex;align-items:center;gap:8px;font-family:Manrope,sans-serif;font-weight:600;font-size:14px;color:var(--muted);margin:-6px 0 16px}
+[dir="rtl"] .ostat{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14.5px}
+.ostat i{width:8px;height:8px;border-radius:50%;background:#A6ABB8;flex:none}
+.ostat.open{color:#1E7A3C}
+.ostat.open i{background:#2FB45A;box-shadow:0 0 0 4px rgba(47,180,90,.18)}
+@media (max-width:420px){.omap{width:72px}.office-card h3,.office-card .addr{padding-inline-end:86px}}
+@media (prefers-reduced-motion:reduce){
+  .js .reveal .qsteps::before,.js .reveal .qstep{transform:none;opacity:1}
+  .om-ring{animation:none;opacity:0}.qprog i{transition:none}
+}

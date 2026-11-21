@@ -2158,3 +2158,65 @@ function svcFallbackAnchor(doc) {
     }
   });
 })();
+
+/* ==========================================================================
+   Contact (2026-11): each office says whether it is open right now, in its
+   own time zone; the quote card fills a thin bar as the four required
+   details are completed.
+   ========================================================================== */
+(function contactPlus() {
+  var doc = document;
+  var AR = doc.documentElement.getAttribute('dir') === 'rtl';
+
+  var cards = [].slice.call(doc.querySelectorAll('.office-card[data-tz]'));
+  if (cards.length && window.Intl && Intl.DateTimeFormat) {
+    var days = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    var lines = cards.map(function (c) {
+      var p = doc.createElement('p');
+      p.className = 'ostat';
+      var addr = c.querySelector('.addr');
+      c.insertBefore(p, addr ? addr.nextSibling : null);
+      return p;
+    });
+    var tick = function () {
+      cards.forEach(function (c, i) {
+        var parts;
+        try {
+          parts = new Intl.DateTimeFormat('en-US', { timeZone: c.getAttribute('data-tz'), weekday: 'short',
+            hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+        } catch (e) { return; }
+        var get = function (t) { var x = parts.filter(function (q) { return q.type === t; })[0]; return x ? x.value : ''; };
+        var d = days[get('weekday')], hh = parseInt(get('hour'), 10), mm = get('minute');
+        var open = d >= 0 && d <= 4 && hh >= 9 && hh < 17;
+        var time = (hh < 10 ? '0' : '') + hh + ':' + mm;
+        lines[i].classList.toggle('open', open);
+        lines[i].innerHTML = '<i aria-hidden="true"></i>';
+        lines[i].appendChild(doc.createTextNode(AR
+          ? (open ? 'مفتوح الآن' : 'مغلق الآن') + ' · ' + time + ' بالتوقيت المحلي'
+          : (open ? 'Open now' : 'Closed now') + ' · ' + time + ' local time'));
+      });
+    };
+    tick();
+    setInterval(tick, 30000);
+  }
+
+  var form = doc.querySelector('.cta-card form[data-quote]');
+  if (form) {
+    var req = [].slice.call(form.querySelectorAll('input[required]'));
+    if (req.length) {
+      var bar = doc.createElement('div');
+      bar.className = 'qprog';
+      bar.setAttribute('aria-hidden', 'true');
+      bar.appendChild(doc.createElement('i'));
+      form.parentNode.insertBefore(bar, form.parentNode.firstChild);
+      var upd = function () {
+        var ok = req.filter(function (el) { return el.value.trim() && el.checkValidity(); }).length;
+        bar.style.setProperty('--p', (ok / req.length).toFixed(3));
+        bar.classList.toggle('done', ok === req.length);
+      };
+      form.addEventListener('input', upd);
+      form.addEventListener('change', upd);
+      upd();
+    }
+  }
+})();
