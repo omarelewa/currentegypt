@@ -232,6 +232,85 @@
     });
   }
 
+  /* ---------- mobile menu v2: search, focus trap, current page ---------- */
+  if (mnav) {
+    /* keep Tab inside the open menu */
+    mnav.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var f = [].slice.call(mnav.querySelectorAll('a[href],button,input')).filter(function (el) {
+        return el.offsetParent !== null && !el.closest('[hidden]');
+      });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && doc.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && doc.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    /* mark where the visitor is */
+    var here = location.pathname.split('/').pop() || 'index.html';
+    mnav.querySelectorAll('.mnav-list a').forEach(function (a) {
+      if (a.getAttribute('href') === here) a.setAttribute('aria-current', 'page');
+    });
+    /* search over every project and service; Arabic is normalised so
+       hamza, taa marbuta and diacritics don't block a match */
+    var q = doc.getElementById('mnav-q'),
+        res = mnav.querySelector('.mnav-results'),
+        groups = mnav.querySelector('.mnav-groups');
+    if (q && res && groups) {
+      var norm = function (s) {
+        return String(s).toLowerCase()
+          .replace(/[ً-ْـ]/g, '')
+          .replace(/[أإآ]/g, 'ا')
+          .replace(/ة/g, 'ه').replace(/ى/g, 'ي')
+          .replace(/[^\w؀-ۿ]+/g, ' ').trim();
+      };
+      var rows = [].slice.call(res.querySelectorAll('li')).map(function (li) {
+        var a = li.querySelector('a');
+        return { li: li, k: norm(a.getAttribute('data-k') + ' ' + a.textContent) };
+      });
+      var count = res.querySelector('.mnav-count'), none = res.querySelector('.mnav-none');
+      var tpl = count ? count.getAttribute('data-tpl') : '{n}';
+      var run = function () {
+        var terms = norm(q.value).split(' ').filter(Boolean);
+        var on = terms.length > 0;
+        res.hidden = !on; groups.hidden = on;
+        if (!on) return;
+        var n = 0;
+        rows.forEach(function (r) {
+          var hit = terms.every(function (t) { return r.k.indexOf(t) > -1; });
+          r.li.hidden = !hit; if (hit) n++;
+        });
+        if (count) count.textContent = n ? tpl.replace('{n}', n) : '';
+        if (none) none.hidden = n > 0;
+      };
+      q.addEventListener('input', run);
+      q.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        var hit = rows.filter(function (r) { return !r.li.hidden; })[0];
+        if (hit && !res.hidden) { e.preventDefault(); hit.li.querySelector('a').click(); }
+      });
+      /* clear the search once the menu closes, so it reopens on the groups */
+      mnav.addEventListener('transitionend', function (e) {
+        if (e.target === mnav && !mnav.classList.contains('open') && q.value) { q.value = ''; run(); }
+      });
+    }
+  }
+
+  /* projects index: ?f=energy opens pre-filtered (linked from the menu) */
+  try {
+    var pf = new URLSearchParams(location.search).get('f');
+    if (pf) {
+      var fb = doc.querySelector('.fbtn[data-f="' + pf.replace(/[^a-z]/g, '') + '"]');
+      /* applied directly, not via click: a View Transition started during
+         page load can be skipped, which left the grid unfiltered */
+      if (fb) {
+        fbtns.forEach(function (x) { x.classList.toggle('active', x === fb); });
+        doc.querySelectorAll('#pgrid .proj').forEach(function (p) {
+          p.classList.toggle('hide', p.dataset.cat !== fb.dataset.f);
+        });
+      }
+    }
+  } catch (err) { /* no URLSearchParams: show all */ }
+
   /* ---------- sticky mobile bar: entrance + stay out of the form's way ---------- */
   var mbar = doc.querySelector('.mbar');
   if (mbar) {
