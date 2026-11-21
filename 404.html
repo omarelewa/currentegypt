@@ -1,13 +1,63 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Page not found | Current</title><meta name="robots" content="noindex">
-<link rel="icon" type="image/png" sizes="32x32" href="https://www.currentegypt.com/favicon-32.png"><link rel="icon" type="image/png" sizes="64x64" href="https://www.currentegypt.com/favicon-64.png">
-
-<style>@font-face{font-family:'Manrope';font-style:normal;font-weight:500 800;font-display:swap;src:url(assets/fonts/manrope-latin-500-800.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400 600;font-display:swap;src:url(assets/fonts/ibm-plex-sans-latin-400-600.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style><style>body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#0C0F26;color:#EDEFF7;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
-h1{font-family:Manrope;font-size:clamp(60px,14vw,120px);margin:0;color:#fff;letter-spacing:-.03em}
-p{color:#A6ABC8;font-size:17px;margin:14px 0 30px}
-a{display:inline-block;font-family:Manrope;font-weight:700;background:#fff;color:#0C0F26;padding:14px 26px;border-radius:4px;text-decoration:none;margin:0 6px 10px}
-a.o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3)}</style><link rel="preload" as="font" type="font/woff2" crossorigin href="assets/fonts/manrope-latin-500-800.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="assets/fonts/ibm-plex-sans-latin-400-600.woff2"><meta name="theme-color" content="#0C0F26"><meta name="color-scheme" content="light"></head>
-<body><div><h1>404</h1><p>This page doesn't exist, but 19 delivered projects do.</p>
-<a href="https://www.currentegypt.com/">Back to home</a><a class="o" href="https://www.currentegypt.com/projects.html">View our projects</a></div><script defer src="assets/site.js?v=68"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+<meta name="theme-color" content="#0C0F26"><meta name="color-scheme" content="dark">
+<style>@font-face{font-family:'Manrope';font-weight:500 800;font-display:swap;src:url(/assets/fonts/manrope-latin-500-800.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-weight:400 600;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-latin-400-600.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans Arabic';font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-arabic-400.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFC}
+@font-face{font-family:'IBM Plex Sans Arabic';font-weight:700;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-arabic-700.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFC}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#0C0F26;color:#EDEFF7;min-height:100svh;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,72px) 20px 48px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:clamp(40px,9vw,96px)}
+.top img{height:40px;width:auto;filter:brightness(0) invert(1)}
+.sw{font:600 15px/1 'IBM Plex Sans Arabic','IBM Plex Sans',system-ui,sans-serif;color:#fff;background:none;border:1.5px solid rgba(255,255,255,.28);border-radius:999px;min-height:44px;padding:0 18px;cursor:pointer}
+.sw:hover{border-color:#fff}
+.k{font:800 13px Manrope,sans-serif;letter-spacing:.16em;color:#8E9BFF;text-transform:uppercase}
+h1{font:800 clamp(36px,7vw,64px)/1.04 Manrope,sans-serif;letter-spacing:-.035em;color:#fff;margin:14px 0 14px}
+.lead{color:#A6ABC8;font-size:clamp(17px,2vw,19px);margin:0 0 32px;max-width:46ch}
+.search{position:relative}
+.search input{width:100%;height:56px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font:16px 'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,sans-serif;padding:0 18px}
+.search input::placeholder{color:#8F95B5}
+.search input:focus{outline:none;border-color:#8E9BFF;background:rgba(255,255,255,.09)}
+.res{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
+.res a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;padding:10px 16px;border-radius:10px;color:#fff;text-decoration:none;background:rgba(255,255,255,.04);font-size:16px}
+.res a:hover,.res a:focus-visible{background:rgba(255,255,255,.1);outline:none}
+.res small{color:#8F95B5;font-size:13px;white-space:nowrap}
+.none{color:#A6ABC8;margin:14px 0 0;font-size:15px}
+h2{font:700 13px Manrope,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:44px 0 14px}
+.go{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.go a{display:flex;flex-direction:column;gap:4px;min-height:88px;padding:16px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:border-color .25s,background .25s}
+.go a:hover,.go a:focus-visible{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.04);outline:none}
+.go b{font:700 17px Manrope,sans-serif}
+.go span{color:#A6ABC8;font-size:14px}
+.foot{margin-top:48px;color:#8F95B5;font-size:14px}
+.foot a{color:#fff}
+[lang="ar"]{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+[lang="ar"] h1,[lang="ar"] .go b{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;letter-spacing:0;line-height:1.3}
+[lang="ar"] .k,[lang="ar"] h2{letter-spacing:0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px}
+[hidden]{display:none!important}
+@media (max-width:520px){.go{grid-template-columns:1fr}}</style></head>
+<body><main class="wrap" lang="en" dir="ltr" data-l="en" data-p="Project" data-s="Service" hidden><div class="top"><a href="/"><img src="/assets/img/8bad3d36ef15434a.avif" width="420" height="204" alt="Current"></a><button class="sw" type="button" lang="ar">عربي</button></div><span class="k">Error 404</span><h1>We couldn’t find that page.</h1><p class="lead">It may have moved or no longer exists. Search for a project or service, or pick one of the pages below.</p><div class="search"><input type="search" placeholder="Search projects and services" aria-label="Search projects and services" autocomplete="off"><ul class="res"></ul><p class="none" hidden>No matches. Try another word, or get in touch.</p></div><h2>Useful pages</h2><nav class="go"><a href="/"><b>Home</b><span>Start from the top</span></a><a href="/projects.html"><b>Projects</b><span>19 featured projects</span></a><a href="/services.html"><b>Services</b><span>Ten services, one team</span></a><a href="/contact.html"><b>Contact</b><span>Request a quote</span></a></nav><p class="foot">Need a hand? Call <a href="tel:+201069668444" dir="ltr">+20 106 966 8444</a></p></main><main class="wrap" lang="ar" dir="rtl" data-l="ar" data-p="مشروع" data-s="خدمة" hidden><div class="top"><a href="/index-ar.html"><img src="/assets/img/8bad3d36ef15434a.avif" width="420" height="204" alt="Current"></a><button class="sw" type="button" lang="en">English</button></div><span class="k">خطأ 404</span><h1>لم نجد هذه الصفحة.</h1><p class="lead">ربما نُقلت أو لم تعد موجودة. ابحث عن مشروع أو خدمة، أو اختر من الصفحات أدناه.</p><div class="search"><input type="search" placeholder="ابحث في المشاريع والخدمات" aria-label="ابحث في المشاريع والخدمات" autocomplete="off"><ul class="res"></ul><p class="none" hidden>لا نتائج. جرّب كلمة أخرى، أو تواصل معنا.</p></div><h2>صفحات مفيدة</h2><nav class="go"><a href="/index-ar.html"><b>الرئيسية</b><span>ابدأ من البداية</span></a><a href="/projects-ar.html"><b>المشاريع</b><span>19 مشروعًا مختارًا</span></a><a href="/services-ar.html"><b>الخدمات</b><span>عشر خدمات تحت فريق واحد</span></a><a href="/contact-ar.html"><b>تواصل معنا</b><span>اطلب عرض سعر</span></a></nav><p class="foot">تحتاج مساعدة؟ اتصل على <a href="tel:+201069668444" dir="ltr">+20 106 966 8444</a></p></main>
+<noscript><style>main[data-l="en"]{display:block!important}</style></noscript>
+<script>(function(){var D=[["p", "/project-banan.html", "Banan Residential Villas", "/project-banan-ar.html", "فلل بنان السكنية"], ["p", "/project-central-bus-hub.html", "Central Bus Station", "/project-central-bus-hub-ar.html", "محطة الحافلات المركزية"], ["p", "/project-emc-8.html", "EMC 8", "/project-emc-8-ar.html", "EMC 8"], ["p", "/project-emc-adidas.html", "EMC Adidas Factory", "/project-emc-adidas-ar.html", "EMC مصنع أديداس"], ["p", "/project-emc-calvin-klein.html", "EMC Calvin Klein Factory", "/project-emc-calvin-klein-ar.html", "مصنع EMC Calvin Klein"], ["p", "/project-emc-reebok.html", "EMC: Reebok Storage", "/project-emc-reebok-ar.html", "EMC: مخزن Reebok"], ["p", "/project-fanar.html", "Fanar Project", "/project-fanar-ar.html", "مشروع Fanar"], ["p", "/project-halliburton-fox9.html", "Halliburton FOX9 Base Camp", "/project-halliburton-fox9-ar.html", "معسكر قاعدة Halliburton FOX9"], ["p", "/project-hvdc-converter-stations.html", "HVDC Converter Stations", "/project-hvdc-converter-stations-ar.html", "محطات تحويل التيار المستمر عالي الجهد HVDC"], ["p", "/project-medco-plast.html", "MEDCO Plast Factory", "/project-medco-plast-ar.html", "مصنع MEDCO Plast"], ["p", "/project-milita-3.html", "Milita Egypt, Factory 3", "/project-milita-3-ar.html", "Milita Egypt، المصنع 3"], ["p", "/project-multipurpose.html", "Multipurpose Sports Halls", "/project-multipurpose-ar.html", "الصالات الرياضية متعددة الأغراض"], ["p", "/project-nasita.html", "Nasita Factory", "/project-nasita-ar.html", "مصنع Nasita"], ["p", "/project-residential-apartment-buildings.html", "Residential Apartment Buildings, R1", "/project-residential-apartment-buildings-ar.html", "عمارات سكنية، R1"], ["p", "/project-schlumberger-workshop.html", "Schlumberger Workshop", "/project-schlumberger-workshop-ar.html", "ورشة Schlumberger"], ["p", "/project-sidi-kerir.html", "Sidi Kerir Seawater Intake", "/project-sidi-kerir-ar.html", "مأخذ مياه البحر بسيدي كرير"], ["p", "/project-supreme-constitutional-court.html", "Supreme Constitutional Court", "/project-supreme-constitutional-court-ar.html", "المحكمة الدستورية العليا"], ["p", "/project-touristic-villas.html", "Touristic Villas Compound", "/project-touristic-villas-ar.html", "مجمع الفلل السياحية"], ["p", "/project-vodafone-square.html", "Vodafone Square", "/project-vodafone-square-ar.html", "ميدان Vodafone"], ["s", "/service-civil-works.html", "Civil Works & Earthworks", "/service-civil-works-ar.html", "الأعمال المدنية والحفر"], ["s", "/service-commercial-administrative.html", "Commercial & Administrative Buildings", "/service-commercial-administrative-ar.html", "المباني التجارية والإدارية"], ["s", "/service-concrete-steel.html", "Concrete & Steel Structures", "/service-concrete-steel-ar.html", "المنشآت الخرسانية والمعدنية"], ["s", "/service-design-build.html", "Design-Build", "/service-design-build-ar.html", "التصميم والتنفيذ"], ["s", "/service-fit-out.html", "Fit-Out (Commercial & Residential)", "/service-fit-out-ar.html", "التشطيبات (تجارية وسكنية)"], ["s", "/service-general-contracting.html", "General Contracting", "/service-general-contracting-ar.html", "المقاولات العامة"], ["s", "/service-housing.html", "Housing & Accommodation", "/service-housing-ar.html", "الإسكان والمساكن"], ["s", "/service-mep.html", "Electromechanical Works (MEP)", "/service-mep-ar.html", "الأعمال الكهروميكانيكية (MEP)"], ["s", "/service-process-industrial.html", "Process & Industrial Buildings", "/service-process-industrial-ar.html", "المباني الصناعية والإنتاجية"], ["s", "/service-renovation-turnkey.html", "Renovation & Turnkey", "/service-renovation-turnkey-ar.html", "التجديد والتسليم المفتاحي"]];
+var norm=function(s){return s.toLowerCase().replace(/[\u064B-\u065F\u0670]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^\w\u0600-\u06FF ]+/g,' ').trim()};
+var mains=[].slice.call(document.querySelectorAll('main'));
+var pick=function(l){mains.forEach(function(m){m.hidden=m.getAttribute('data-l')!==l});document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';
+  document.title=l==='ar'?'الصفحة غير موجودة | Current':'Page not found | Current';};
+var ar=/-ar(\.html)?$/.test(location.pathname)||/^ar/i.test(navigator.language||'');
+pick(ar?'ar':'en');
+mains.forEach(function(m){var l=m.getAttribute('data-l'),inp=m.querySelector('input'),ul=m.querySelector('.res'),none=m.querySelector('.none');
+  m.querySelector('.sw').addEventListener('click',function(){pick(l==='ar'?'en':'ar');var o=document.querySelector('main:not([hidden]) input');o&&o.focus()});
+  var guess=decodeURIComponent(location.pathname.split('/').pop().replace(/\.html$/,'').replace(/-ar$/,'')).replace(/[-_]+/g,' ');
+  var run=function(){var q=norm(inp.value);ul.innerHTML='';if(!q){none.hidden=true;return}
+    var terms=q.split(' ').filter(Boolean),n=0;
+    D.forEach(function(d){var name=l==='ar'?d[4]:d[2],hay=norm(d[2]+' '+d[4]+' '+d[1]);
+      if(n<6&&terms.every(function(t){return hay.indexOf(t)>-1})){n++;var li=document.createElement('li'),a=document.createElement('a');
+        a.href=l==='ar'?d[3]:d[1];a.textContent=name;var sm=document.createElement('small');sm.textContent=d[0]==='p'?m.getAttribute('data-p'):m.getAttribute('data-s');a.appendChild(sm);li.appendChild(a);ul.appendChild(li)}});
+    none.hidden=n>0};
+  inp.addEventListener('input',run);
+  if(guess&&guess!=='404'&&!/^index/.test(guess)){inp.value=guess;run();if(!ul.children.length){inp.value='';none.hidden=true}}
+});})();</script>
 </body></html>

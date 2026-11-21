@@ -854,7 +854,7 @@
   function titleBlock() {
     var foot = doc.querySelector('footer .wrap');
     var grid = foot && foot.querySelector('.foot-grid');
-    if (!foot || !grid) return;
+    if (!foot || !grid || foot.closest('.foot-v2')) return; /* the v2 footer says this in its closing line */
 
     var fields = AR
       ? [['الجهة', 'Current for Construction Supply'],
@@ -2179,7 +2179,7 @@ function svcFallbackAnchor(doc) {
   var doc = document;
   var AR = doc.documentElement.getAttribute('dir') === 'rtl';
 
-  var cards = [].slice.call(doc.querySelectorAll('.office-card[data-tz]'));
+  var cards = [].slice.call(doc.querySelectorAll('.office-card[data-tz], footer .office[data-tz]'));
   if (cards.length && window.Intl && Intl.DateTimeFormat) {
     var days = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
     var lines = cards.map(function (c) {
