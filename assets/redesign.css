@@ -1847,3 +1847,64 @@ body:not(.home) .sec-head h2{font-size:clamp(32px,5vw,64px);line-height:1.05;let
 @media (prefers-reduced-motion:reduce){
   .ph-media,.ph-media img,.page-hero h1.split .wi,.page-hero.photo>.wrap,.aside .facts li,.gallery img{animation:none}
 }
+
+/* Inner pages, size pass (2026-11): stat rows fold to two columns on
+   phones, small labels reach the 13px floor, contact lines are real tap
+   targets, filter buttons are a full 44px. */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(28px,4vw,48px) 24px}
+@media (max-width:820px){.stat-row{grid-template-columns:repeat(2,1fr);gap:34px 24px}}
+.csr .k,.vm .k{font-size:13px}
+.bio .chip,.svc-chip{font-size:13px}
+[dir="rtl"] .csr .k,[dir="rtl"] .vm .k,[dir="rtl"] .bio .chip,[dir="rtl"] .svc-chip{font-size:14px;letter-spacing:0}
+.office-card .facts a{display:inline-block;padding:12px 0;margin:-12px 0}
+.fbtn{min-height:44px}
+
+/* ==========================================================================
+   Next project (2026-11): each project page ends on the next one, full
+   bleed, the photo opening from a card to the full width as it arrives.
+   ========================================================================== */
+.next-proj{background:var(--ink);color:#fff;overflow:clip}
+.np-link{position:relative;display:flex;align-items:flex-end;min-height:min(86svh,780px);isolation:isolate;color:#fff;text-decoration:none}
+.np-media{position:absolute;inset:0;z-index:-1;overflow:clip}
+.np-media img{width:100%;height:100%;object-fit:cover;transition:scale 1.2s var(--ease-out)}
+.np-media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(10,14,30,.9) 0%,rgba(10,14,30,.55) 40%,rgba(10,14,30,.1) 80%)}
+.np-copy{width:100%;padding-bottom:clamp(40px,6vw,80px)}
+.np-copy .eyebrow{color:#fff;opacity:.85}
+.np-copy h2{color:#fff;font-size:clamp(34px,6vw,84px);line-height:1.03;letter-spacing:-.04em;max-width:16ch;margin:14px 0 0}
+.np-copy p{color:rgba(255,255,255,.82);font-size:clamp(15px,1.5vw,18px);margin-top:14px}
+.np-copy .cine-go{display:inline-flex;margin-top:22px}
+.np-link:hover .np-media img{scale:1.04}
+.np-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:18px;font-family:Manrope,sans-serif;font-weight:600;font-size:14px;color:var(--on-navy-mute)}
+.np-foot a{color:#fff;display:inline-flex;align-items:center;min-height:44px}
+.np-foot a:hover{color:var(--cobalt-lt)}
+[dir="rtl"] .np-foot{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:15px}
+[dir="rtl"] .np-copy h2{letter-spacing:0;line-height:1.2}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .np-link{animation:npOpen linear both;animation-timeline:view();animation-range:entry 0% cover 42%}
+    .np-media img{animation:npImg linear both;animation-timeline:view();animation-range:entry 0% exit 100%}
+  }
+}
+@keyframes npOpen{from{clip-path:inset(7% 5% round 24px)}to{clip-path:inset(0 round 0)}}
+@keyframes npImg{from{translate:0 -6%;scale:1.14}to{translate:0 6%;scale:1.14}}
+
+/* ==========================================================================
+   Jump-to chips (2026-11): long pages get a bar of their sections under
+   the header; the chip for the section you are reading fills in.
+   ========================================================================== */
+.jump{position:sticky;top:var(--hdr-h,72px);z-index:40;background:rgba(251,250,248,.88);backdrop-filter:saturate(160%) blur(14px);
+  -webkit-backdrop-filter:saturate(160%) blur(14px);border-bottom:1px solid var(--line);transition:top .38s var(--ease-out)}
+.hdr-off .jump{top:0}
+.jump-track{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:10px 0;overscroll-behavior-x:contain}
+.jump-track::-webkit-scrollbar{display:none}
+.jump a{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;
+  font-family:Manrope,sans-serif;font-weight:600;font-size:14px;color:#2B2F49;background:#fff;border:1.5px solid var(--line-2);
+  transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
+.jump a:hover{border-color:var(--accent);color:var(--accent)}
+.jump a.on{background:var(--ink);border-color:var(--ink);color:#fff}
+[dir="rtl"] .jump a{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:15px}
+.jump-target{scroll-margin-top:calc(var(--hdr-h,72px) + 84px)}
+@media (max-width:760px){
+  .jump-track{margin-inline:calc(var(--gutter,20px) * -1);padding-inline:var(--gutter,20px);scroll-padding-inline:var(--gutter,20px)}
+}
+@media (prefers-reduced-motion:reduce){.jump,.jump a,.np-media img{transition:none}}

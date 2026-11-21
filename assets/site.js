@@ -2000,3 +2000,78 @@ function svcFallbackAnchor(doc) {
     addEventListener('resize', function () { place(current); }, { passive: true });
   }
 })();
+
+/* ==========================================================================
+   Jump-to chips (2026-11): a bar of the page's sections under the header
+   on long inner pages. Labels come from each section's eyebrow, or its
+   heading when short; calls to action and questions are left out.
+   ========================================================================== */
+(function jumpChips() {
+  var doc = document, body = doc.body, main = doc.querySelector('main');
+  if (!main || body.classList.contains('home')) return;
+  var hero = main.querySelector('.page-hero');
+  if (!hero) return;
+  var items = [];
+  [].slice.call(main.querySelectorAll('h2')).forEach(function (h) {
+    if (h.closest('.page-hero, .cta, .cta-strip, form, aside, .next-proj')) return;
+    var t = h.textContent.trim();
+    if (/[.?!؟]$/.test(t)) return;
+    var head = h.closest('.sec-head'), eb = head && head.querySelector('.eyebrow');
+    var label = eb ? eb.textContent.trim() : t;
+    if (!label || label.length > 30) return;
+    if (!h.id) h.id = 'sec-' + (items.length + 1);
+    h.classList.add('jump-target');
+    items.push({ h: h, label: label });
+  });
+  if (items.length < 3) return;
+
+  var ar = (doc.documentElement.lang || '').indexOf('ar') === 0;
+  var nav = doc.createElement('nav');
+  nav.className = 'jump';
+  nav.setAttribute('aria-label', ar ? 'في هذه الصفحة' : 'On this page');
+  var wrap = doc.createElement('div'); wrap.className = 'wrap';
+  var track = doc.createElement('div'); track.className = 'jump-track';
+  items.forEach(function (it) {
+    var a = doc.createElement('a');
+    a.href = '#' + it.h.id; a.textContent = it.label;
+    it.a = a; track.appendChild(a);
+  });
+  wrap.appendChild(track); nav.appendChild(wrap);
+  hero.parentNode.insertBefore(nav, hero.nextSibling);
+
+  /* stay under the header, and take its place while it steps aside */
+  var hdr = doc.getElementById('hdr') || doc.querySelector('.hdr');
+  var setH = function () { if (hdr) doc.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight + 'px'); };
+  setH(); addEventListener('resize', setH, { passive: true });
+  if (hdr && window.MutationObserver) {
+    new MutationObserver(function () {
+      doc.documentElement.classList.toggle('hdr-off', hdr.classList.contains('hdr-hide'));
+    }).observe(hdr, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  /* the chip for the section being read fills in, and slides into view */
+  var current = null;
+  var mark = function (it) {
+    if (it === current) return;
+    current = it;
+    items.forEach(function (x) {
+      x.a.classList.toggle('on', x === it);
+      if (x === it) x.a.setAttribute('aria-current', 'true'); else x.a.removeAttribute('aria-current');
+    });
+    if (it) {
+      var a = it.a, tr = track.getBoundingClientRect(), r = a.getBoundingClientRect();
+      if (r.left < tr.left + 8 || r.right > tr.right - 8) {
+        track.scrollTo({ left: track.scrollLeft + (r.left - tr.left) - (tr.width - r.width) / 2, behavior: 'smooth' });
+      }
+    }
+  };
+  var q = false;
+  var spy = function () {
+    q = false;
+    var line = innerHeight * 0.35, pick = null;
+    items.forEach(function (it) { if (it.h.getBoundingClientRect().top < line) pick = it; });
+    mark(pick);
+  };
+  addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(spy); } }, { passive: true });
+  spy();
+})();
