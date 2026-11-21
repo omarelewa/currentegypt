@@ -244,87 +244,226 @@
     }
   }
 
-  /* ---------- quote form ---------- */
-  function buildMailto(fd) {
-    var NL = String.fromCharCode(10);
-    var rows = [];
-    fd.forEach(function (v, k) {
-      if (v && k.charAt(0) !== '_') rows.push(k.charAt(0).toUpperCase() + k.slice(1) + ': ' + v);
-    });
-    var body = encodeURIComponent('New project inquiry from currentegypt.com' + NL + NL + rows.join(NL));
-    var subj = encodeURIComponent('Project inquiry from ' + (fd.get('company') || fd.get('name') || 'website'));
-    return 'mailto:admin@currentegypt.com?subject=' + subj + '&body=' + body;
+  /* ---------- quote form: service-aware WhatsApp builder ----------
+     The visitor picks a service and gets two questions written for that
+     scope. On submit every filled field is read back in DOM order, label
+     included, so the WhatsApp text (and the email fallback) always says
+     exactly what the form showed, in the page's own language. */
+  var WA_NUMBER = '201069668444';
+  function L(en, ar) { return AR ? ar : en; }
+  var B_IND = [L('Industrial or oil & gas', 'صناعي أو بترول وغاز'), L('Commercial or office', 'تجاري أو إداري'), L('Residential', 'سكني'), L('Public or government', 'حكومي أو عام')];
+  var FLOORS = [L('Single storey', 'دور واحد'), L('2 to 4 floors', 'من 2 إلى 4 أدوار'), L('5 to 10 floors', 'من 5 إلى 10 أدوار'), L('More than 10 floors', 'أكثر من 10 أدوار')];
+  var AREA = {
+    site: L('Approx. site area', 'مساحة الموقع التقريبية'),
+    foot: L('Approx. footprint', 'المساحة التقريبية للمسقط'),
+    built: L('Approx. built-up area', 'المساحة المبنية التقريبية'),
+    space: L('Approx. space area', 'المساحة التقريبية للفراغ')
+  };
+  /* index = position in the service <select> (1-based, same in EN and AR) */
+  var QX = {
+    1: { area: 'site', q: [
+      { n: 'works', multi: 1, l: L('Type of works', 'نوع الأعمال'), o: [L('Grading & earthworks', 'تسوية وأعمال حفر'), L('Roads & paving', 'طرق ورصف'), L('Foundations & piling', 'أساسات وخوازيق'), L('Water & drainage networks', 'شبكات مياه وصرف'), L('Site prep for a plant', 'تجهيز موقع لمنشأة')] },
+      { n: 'site', l: L('Site condition', 'حالة الموقع'), o: [L('Greenfield', 'أرض فضاء جديدة'), L('Existing or operating facility', 'منشأة قائمة أو قيد التشغيل'), L('Remote or desert site', 'موقع ناءٍ أو صحراوي')] }] },
+    2: { area: 'foot', q: [
+      { n: 'structure', l: L('Structure type', 'نوع المنشأ'), o: [L('Steel warehouse or workshop', 'مستودع أو ورشة بهيكل معدني'), L('Reinforced-concrete building', 'مبنى خرساني مسلح'), L('Industrial structure or pipe rack', 'منشأ صناعي أو حوامل مواسير'), L('Foundations & equipment bases', 'أساسات وقواعد معدات')] },
+      { n: 'height', l: L('Height', 'الارتفاع'), o: [L('Single storey', 'دور واحد'), L('High-bay (over 12 m)', 'ارتفاع عالٍ (أكثر من 12 م)'), L('2 to 4 floors', 'من 2 إلى 4 أدوار'), L('5 floors or more', '5 أدوار فأكثر')] }] },
+    3: { area: 'built', q: [
+      { n: 'building', l: L('Building type', 'نوع المبنى'), o: B_IND.concat([L('Healthcare or education', 'صحي أو تعليمي')]) },
+      { n: 'systems', multi: 1, l: L('Systems needed', 'الأنظمة المطلوبة'), o: [L('HVAC', 'تكييف وتهوية'), L('Power & lighting', 'قوى وإنارة'), L('Plumbing & drainage', 'سباكة وصرف'), L('Firefighting & alarm', 'مكافحة وإنذار حريق'), L('Low current (ELV)', 'تيار خفيف')] }] },
+    4: { area: 'built', q: [
+      { n: 'type', l: L('Project type', 'نوع المشروع'), o: B_IND },
+      { n: 'scope', multi: 1, l: L('Scope', 'النطاق'), o: [L('Civil & structure', 'مدني وإنشائي'), L('MEP', 'كهروميكانيك'), L('Finishes', 'تشطيبات'), L('Full turnkey', 'تسليم مفتاح كامل')] }] },
+    5: { area: 'site', q: [
+      { n: 'facility', l: L('Facility type', 'نوع المنشأة'), o: [L('Oil & gas base or camp', 'قاعدة أو معسكر بترول وغاز'), L('Factory or process plant', 'مصنع أو وحدة إنتاج'), L('Workshop or warehouse', 'ورشة أو مستودع'), L('Utilities (water, power)', 'مرافق (مياه، كهرباء)')] },
+      { n: 'live', l: L('Site status', 'حالة الموقع'), o: [L('New site', 'موقع جديد'), L('Live operating facility (permits, HSE)', 'منشأة قيد التشغيل (تصاريح وسلامة)')] }] },
+    6: { area: 'built', q: [
+      { n: 'building', l: L('Building type', 'نوع المبنى'), o: [L('Office', 'إداري'), L('Retail or mall', 'تجاري أو مول'), L('Hotel or hospitality', 'فندقي أو ضيافة'), L('Mixed-use', 'متعدد الاستخدامات')] },
+      { n: 'floors', l: L('Floors', 'عدد الأدوار'), o: FLOORS }] },
+    7: { area: 'built', q: [
+      { n: 'stage', l: L('Design stage', 'مرحلة التصميم'), o: [L('Brief or idea only', 'فكرة أو متطلبات فقط'), L('Concept design', 'تصميم مبدئي'), L('Design needs completing', 'تصميم يحتاج استكمالًا')] },
+      { n: 'facility', l: L('Facility type', 'نوع المنشأة'), o: B_IND }] },
+    8: { area: 'space', q: [
+      { n: 'space', l: L('Space type', 'نوع الفراغ'), o: [L('Office', 'مكتب'), L('Retail', 'محل تجاري'), L('Hospitality', 'ضيافة'), L('Other', 'أخرى')] },
+      { n: 'cond', l: L('Current condition', 'الحالة الحالية'), o: [L('Shell & core', 'هيكل خام'), L('Existing fit-out to strip', 'تشطيبات قائمة تُزال'), L('Partly fitted', 'مشطّب جزئيًا')] }] },
+    9: { area: 'built', q: [
+      { n: 'housing', l: L('Housing type', 'نوع الإسكان'), o: [L('Staff camp or workforce housing', 'معسكر أو سكن عمال'), L('Residential compound', 'كمبوند سكني'), L('Villas', 'فلل'), L('Apartment buildings', 'عمارات سكنية')] },
+      { n: 'units', l: L('Units or beds', 'عدد الوحدات أو الأسرّة'), o: [L('Under 50', 'أقل من 50'), L('50 to 200', 'من 50 إلى 200'), L('200 to 1,000', 'من 200 إلى 1,000'), L('Over 1,000', 'أكثر من 1,000')] }] },
+    10: { area: 'built', q: [
+      { n: 'facility', l: L('Facility type', 'نوع المنشأة'), o: B_IND },
+      { n: 'inuse', l: L('During works', 'أثناء التنفيذ'), o: [L('Must stay operational', 'يجب أن تظل قيد التشغيل'), L('Can be vacated', 'يمكن إخلاؤها')] }] },
+    11: { other: 1, q: [] }
+  };
+  var uid = 0;
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  function qHtml(q) {
+    var id = 'qx-' + q.n + '-' + (++uid);
+    if (q.multi) {
+      return '<fieldset class="field qx-multi" data-multi><legend>' + esc(q.l) + '</legend><div class="chips">' +
+        q.o.map(function (o) { return '<label class="chip"><input type="checkbox" name="' + q.n + '" value="' + esc(o) + '"><span>' + esc(o) + '</span></label>'; }).join('') +
+        '</div></fieldset>';
+    }
+    return '<div class="field"><label for="' + id + '">' + esc(q.l) + '</label><select id="' + id + '" name="' + q.n + '" required><option value="">' +
+      esc(L('Choose', 'اختر')) + '</option>' + q.o.map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></div>';
   }
+  /* form labels are questions; the message reads better with nouns */
+  var MSG_LABEL = { service: L('Service', 'الخدمة'), country: L('Country', 'الدولة'), role: L('Role', 'الدور') };
+  function fieldLabel(el) {
+    if (MSG_LABEL[el.name]) return MSG_LABEL[el.name];
+    var box = el.closest('fieldset') || el.closest('.field');
+    if (!box) return el.name;
+    var lab = box.querySelector('legend') || box.querySelector('label');
+    var c = lab.cloneNode(true);
+    [].slice.call(c.querySelectorAll('.opt')).forEach(function (s) { s.remove(); });
+    return c.textContent.trim();
+  }
+  var CONTACT = { name: 1, company: 1, email: 1, phone: 1 };
+  /* Read the form back as [label, value] rows, project first, contact after */
+  function rows(f) {
+    var proj = [], you = [], seen = {};
+    [].slice.call(f.elements).forEach(function (el) {
+      var n = el.name;
+      if (!n || n.charAt(0) === '_' || n === 'page' || el.type === 'submit' || seen[n]) return;
+      var v;
+      if (el.type === 'checkbox') {
+        seen[n] = 1;
+        v = [].slice.call(f.querySelectorAll('input[name="' + n + '"]:checked')).map(function (c) { return c.value; }).join(', ');
+      } else v = (el.value || '').trim();
+      if (!v) return;
+      (CONTACT[n] ? you : proj).push([fieldLabel(el), v, n]);
+    });
+    return { proj: proj, you: you };
+  }
+  function compose(f, bold) {
+    var NL = String.fromCharCode(10), r = rows(f), b = bold ? '*' : '';
+    function line(x) { return x[2] === 'message' ? b + x[0] + ':' + b + NL + x[1] : b + x[0] + ':' + b + ' ' + x[1]; }
+    return b + L('Project inquiry from currentegypt.com', 'استفسار عن مشروع من currentegypt.com') + b + NL + NL +
+      r.proj.map(line).join(NL) + (r.you.length ? NL + NL + r.you.map(line).join(NL) : '');
+  }
+  function waLink(f) { return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(compose(f, true)); }
+  function buildMailto(f) {
+    var subj = encodeURIComponent(L('Project inquiry from ', 'استفسار عن مشروع من ') + ((f.elements.namedItem('company') || {}).value || (f.elements.namedItem('name') || {}).value || 'website'));
+    return 'mailto:admin@currentegypt.com?subject=' + subj + '&body=' + encodeURIComponent(compose(f, false));
+  }
+
   doc.querySelectorAll('form[data-quote]').forEach(function (f) {
+    var sel = f.querySelector('select[name="service"]');
+    var box = f.querySelector('[data-qx]');
+    var more = f.querySelector('.qx-more');
+    var msg = f.querySelector('textarea[name="message"]');
+    var areaLab = f.querySelector('label[for="qf-area"]');
+    var areaDefault = areaLab ? areaLab.textContent : '';
+
+    function render() {
+      var cfg = QX[sel.selectedIndex];
+      if (box) {
+        box.innerHTML = cfg && cfg.q.length ? '<div class="frow">' + cfg.q.map(qHtml).join('') + '</div>' : '';
+        box.classList.toggle('on', !!(cfg && cfg.q.length));
+      }
+      if (areaLab) areaLab.textContent = cfg && cfg.area ? AREA[cfg.area] : areaDefault;
+      if (msg) {
+        var other = !!(cfg && cfg.other);
+        msg.required = other;
+        if (other && more) more.open = true;
+      }
+    }
+    if (sel) sel.addEventListener('change', render);
+
     /* contextual prefill from ?service= / ?ref= */
     try {
       var qs = new URLSearchParams(location.search);
       var svc = qs.get('service'), ref = qs.get('ref');
-      var sel = f.querySelector('select[name="service"]');
       if (svc && sel) {
         [].slice.call(sel.options).forEach(function (o) {
-          if (o.value.toLowerCase().indexOf(svc.toLowerCase()) > -1 ||
-              o.text.toLowerCase().indexOf(svc.toLowerCase()) > -1) sel.value = o.value || o.text;
+          if (o.value && (o.value.toLowerCase().indexOf(svc.toLowerCase()) > -1 ||
+              o.text.toLowerCase().indexOf(svc.toLowerCase()) > -1)) sel.value = o.value;
         });
       }
-      if (ref) {
-        var msg = f.querySelector('textarea[name="message"]');
-        if (msg && !msg.value) msg.value = (AR ? 'مشروع مشابه لـ: ' : 'Similar to: ') + ref;
+      if (ref && msg && !msg.value) {
+        msg.value = (AR ? 'مشروع مشابه لـ: ' : 'Similar to: ') + ref;
+        if (more) more.open = true;
       }
     } catch (err) { /* URLSearchParams unsupported: skip prefill */ }
+    if (sel && sel.value) render();
 
     var pageField = f.querySelector('input[name="page"]');
     if (pageField) pageField.value = location.pathname;
+
+    /* a checkbox group needs at least one tick; native `required` can't say that */
+    function groupsOk() {
+      var bad = null;
+      [].slice.call(f.querySelectorAll('[data-multi]')).forEach(function (g) {
+        var first = g.querySelector('input');
+        var any = !!g.querySelector('input:checked');
+        first.setCustomValidity(any ? '' : L('Pick at least one.', 'اختر خيارًا واحدًا على الأقل.'));
+        if (!any && !bad) bad = first;
+      });
+      return bad;
+    }
+    f.addEventListener('change', function (e) {
+      if (e.target.closest && e.target.closest('[data-multi]')) groupsOk();
+    });
+
+    /* validation runs in the submit handler, after group checks are fresh */
+    f.noValidate = true;
+    var via = 'wa';
+    [].slice.call(f.querySelectorAll('button[type="submit"]')).forEach(function (b) {
+      b.addEventListener('click', function () { via = b.value || 'wa'; });
+    });
 
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var hp = f.querySelector('input[name="_gotcha"]');
       if (hp && hp.value) return; /* bot */
-      var btn = f.querySelector('button[type="submit"]');
+      groupsOk();
+      if (f.reportValidity && !f.reportValidity()) return;
+      var btn = f.querySelector('button[value="' + via + '"]');
       var err = f.querySelector('.form-err');
-      var fd = new FormData(f);
-      var okTitle = f.getAttribute('data-ok-title') || 'Inquiry received.';
-      var okBody = f.getAttribute('data-ok-body') || 'Our estimating team replies within one business day.';
-      var okWa = f.getAttribute('data-ok-wa') || 'WhatsApp us now';
-      var waHref = 'https://wa.me/201069668444?text=' + encodeURIComponent(
-        (AR ? 'مرحبًا Current، أرسلت للتو طلب عرض سعر عبر الموقع باسم ' : 'Hello Current, I just sent a quote request via your website for ') +
-        (fd.get('company') || fd.get('name') || ''));
-      /* h3, not h4: the card sits under an h3, and .form-ok is styled on h3 */
-      function panel(title, body, extraHref, extraLabel, extraClass) {
+      var wa = waLink(f), mail = buildMailto(f);
+      function panel(title, body, href, label, cls, altHref, altLabel) {
         var card = f.closest('.cta-card') || f;
         card.innerHTML =
-          '<div class="form-ok"><div class="tick">&#10003;</div><h3>' + title + '</h3><p>' + body + '</p>' +
-          '<a class="btn ' + extraClass + '" target="_blank" rel="noopener" href="' + extraHref + '">' + extraLabel + '</a>' +
-          '<p class="fine"><a href="' + waHref + '" target="_blank" rel="noopener">' + okWa + '</a></p></div>';
+          '<div class="form-ok" tabindex="-1"><div class="tick">&#10003;</div><h3>' + title + '</h3><p>' + body + '</p>' +
+          '<a class="btn ' + cls + '" target="_blank" rel="noopener" href="' + href + '">' + label + '</a>' +
+          '<p class="fine"><a href="' + altHref + '" target="_blank" rel="noopener">' + altLabel + '</a></p></div>';
+        var ok = card.querySelector('.form-ok');
+        if (ok) ok.focus({ preventScroll: true });
+      }
+      if (via === 'wa') {
+        /* Opening WhatsApp is not delivery: the visitor still has to press
+           send there, so the panel says that instead of "received". */
+        track('quote_whatsapp_opened', { page: location.pathname, service: sel ? sel.value : '' });
+        var w = window.open(wa, '_blank');
+        if (w) { try { w.opener = null; } catch (x) {} } else location.href = wa;
+        panel(f.getAttribute('data-wa-title') || 'Almost there. Press send in WhatsApp.',
+          f.getAttribute('data-wa-body') || 'We opened WhatsApp with your inquiry written out. Send it and our estimating team replies within one business day.',
+          wa, f.getAttribute('data-wa-retry') || 'Open WhatsApp again', 'btn-wa',
+          mail, f.getAttribute('data-mail-alt') || 'Send by email instead');
+        return;
       }
       if (QUOTE_ENDPOINT) {
+        var fd = new FormData(f);
+        fd.append('summary', compose(f, false));
         if (btn) { btn.disabled = true; btn.setAttribute('data-label', btn.textContent); btn.innerHTML = '<span class="spin"></span>'; }
         fetch(QUOTE_ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } })
           .then(function (r) {
             if (!r.ok) throw new Error('send failed');
             track('quote_submit', { page: location.pathname });
-            panel(okTitle, okBody, waHref, okWa, 'btn-wa');
+            panel(f.getAttribute('data-ok-title') || 'Inquiry received.', f.getAttribute('data-ok-body') || '',
+              wa, f.getAttribute('data-ok-wa') || 'WhatsApp us now', 'btn-wa', wa, f.getAttribute('data-ok-wa') || 'WhatsApp us now');
           })
           .catch(function () {
             if (btn) { btn.disabled = false; btn.textContent = btn.getAttribute('data-label') || 'Send'; }
             if (err) err.classList.add('show');
           });
-      } else {
-        /* No endpoint yet, so this only OPENS the visitor's email app. Nothing
-           has reached us until they press send, and saying "inquiry received"
-           here would be untrue. The panel says what actually happened and keeps
-           the mailto link so they can reopen it if the app never appeared. */
-        var mail = buildMailto(fd);
-        track('quote_mailto_opened', { page: location.pathname });
-        location.href = mail;
-        panel(
-          f.getAttribute('data-mail-title') || 'Almost there. Send the email.',
-          f.getAttribute('data-mail-body') || 'We opened your email app with your details filled in. Send that message and we will reply within one business day.',
-          mail,
-          f.getAttribute('data-mail-retry') || 'Open my email app again',
-          'btn-primary'
-        );
+        return;
       }
+      /* No endpoint: this only OPENS the email app, so say exactly that. */
+      track('quote_mailto_opened', { page: location.pathname });
+      location.href = mail;
+      panel(f.getAttribute('data-mail-title') || 'Almost there. Send the email.',
+        f.getAttribute('data-mail-body') || 'We opened your email app with your details filled in. Send that message and we will reply within one business day.',
+        mail, f.getAttribute('data-mail-retry') || 'Open my email app again', 'btn-primary',
+        wa, f.getAttribute('data-ok-wa') || 'WhatsApp us now');
     });
   });
 })();

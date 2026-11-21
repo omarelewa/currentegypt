@@ -1328,3 +1328,62 @@ main:focus{outline:none}
    of a modal should never be the hardest thing on screen to hit. */
 .lightbox .x{display:flex;align-items:center;justify-content:center;
   min-width:44px;min-height:44px}
+
+/* ---------- quote form: service-aware WhatsApp builder ---------- */
+.frow-1{grid-template-columns:1fr}
+.qx:not(.on){display:none}
+.qx .frow{animation:fadeUp .35s var(--ease-out) both}
+.qx-multi{border:0;padding:0;margin:0;min-width:0;grid-column:1/-1}
+.qx-multi legend{font-family:Manrope;font-weight:600;font-size:12.5px;color:#41465F;margin-bottom:8px;padding:0}
+.qx .frow:has(.qx-multi){grid-template-columns:1fr}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;cursor:pointer}
+.chip input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.chip span{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1.5px solid var(--line-2);border-radius:var(--r-control);background:var(--paper);font-size:14px;color:var(--ink);transition:background .15s,border-color .15s,color .15s}
+.chip:hover span{border-color:var(--ink)}
+.chip input:checked+span{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip input:focus-visible+span{outline:none;box-shadow:0 0 0 4px var(--accent-tint);border-color:var(--accent)}
+.qx-more{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:4px 0 14px}
+.qx-more summary{display:flex;align-items:center;gap:6px;min-height:48px;cursor:pointer;list-style:none;font-family:Manrope;font-weight:600;font-size:14px;color:var(--ink)}
+.qx-more summary::-webkit-details-marker{display:none}
+.qx-more summary::before{content:"+";display:inline-flex;width:20px;justify-content:center;font-size:18px;line-height:1;color:var(--muted)}
+.qx-more[open] summary::before{content:"\2212"}
+.qx-more summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qx-more-in{padding:2px 0 14px}
+.qx-more-in .field+.field,.qx-more-in .frow+.field{margin-top:0}
+.qx-sep{font-family:Manrope;font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);margin:4px 0 10px}
+.cta-card .btn-wa{margin-top:8px}
+.btn-text{display:block;width:100%;min-height:44px;margin-top:6px;background:none;border:0;cursor:pointer;font:600 13.5px Manrope,sans-serif;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.btn-text:hover{color:var(--ink)}
+.btn-text:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-control)}
+.form-ok:focus{outline:none}
+[dir="rtl"] .qx-multi legend,[dir="rtl"] .qx-more summary,[dir="rtl"] .qx-sep,[dir="rtl"] .btn-text{font-family:'IBM Plex Sans Arabic',sans-serif;letter-spacing:0}
+/* type floor for the quote card, every screen: fields 16px (also stops iOS
+   zoom-on-focus), labels 13px, small print never under 12.5px. Arabic glyphs
+   read smaller at the same px, so RTL gets +1px on the small sizes. */
+.cta-card .field label,.qx-multi legend{font-size:13px}
+.cta-card .field input,.cta-card .field select,.cta-card .field textarea{font-size:16px}
+.chip span{font-size:15px}
+.qx-more summary{font-size:15px}
+.qx-sep{font-size:12.5px}
+.cta-card .btn-wa{font-size:16px;min-height:50px}
+.btn-text{font-size:14px}
+.cta-card .fine{font-size:12.5px;line-height:1.55}
+.cta-card .sub{font-size:14.5px}
+[dir="rtl"] .cta-card .field label,[dir="rtl"] .qx-multi legend{font-size:14px}
+[dir="rtl"] .qx-sep,[dir="rtl"] .cta-card .fine{font-size:13.5px}
+[dir="rtl"] .btn-text{font-size:15px}
+/* columns follow the CARD's width, not the screen's: the homepage card is
+   ~370px wide on a laptop, where two selects side by side truncate values */
+.cta-card{container-type:inline-size}
+@container (max-width:460px){.cta-card .frow{grid-template-columns:1fr}.chip span{padding:0 12px;font-size:14.5px}}
+@supports not (container-type:inline-size){@media(max-width:1100px){.cta-card .frow{grid-template-columns:1fr}}}
+/* homepage quote card on phones: the navy .cta padding plus the page gutter
+   left the card a 247px track (and the EN card overflowed it). Give the form
+   the room back and never let it exceed its track. */
+.cta-inner>*{min-width:0}
+@media(max-width:560px){
+  .cta:has(.cta-card){padding:28px 12px}
+  .cta:has(.cta-card) .cta-inner>:not(.cta-card){padding:0 8px}
+  .cta-card{padding:22px 18px}
+}
