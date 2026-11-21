@@ -1716,3 +1716,74 @@ img.ld-in{transition:opacity .6s var(--ease-out)}
   @view-transition{navigation:none}
 }
 @media print{.cine{display:none}}
+
+/* ==========================================================================
+   Type floor v2 (2026-11): nothing a visitor must read is smaller than
+   12.5px, card copy reads at 15px, small detail lines at 14px.
+   Shared components (phone bar, tags, language switch) change site-wide.
+   ========================================================================== */
+.mbar a{font-size:12.5px;gap:4px}
+.proj .tag{font-size:12.5px;letter-spacing:.08em}
+.util .lang a,.util .lang span{font-size:13px}
+.util{font-size:13px}
+.step .n,.mg-scope-key .k{font-size:12.5px}
+.trust-lab{font-size:12.5px}
+.btn-text{font-size:15px}
+.home .svc p,.home .step p,.home .sect p,.home .mg-scope-key li{font-size:15px;line-height:1.55}
+.home .proj .loc,.home .person span{font-size:14px}
+@media (max-width:560px){
+  .eyebrow{font-size:13px}
+  .home .svc h3{font-size:20px}
+  .home .step h3{font-size:19px}
+}
+[dir="rtl"] .mbar a{font-size:13.5px}
+[dir="rtl"] .proj .tag{font-size:13px;letter-spacing:0}
+[dir="rtl"] .home .svc p,[dir="rtl"] .home .step p,[dir="rtl"] .home .sect p,[dir="rtl"] .home .mg-scope-key li{font-size:16px}
+
+/* ==========================================================================
+   Motion v6 (2026-11): motion graphics that explain. The scope drawing
+   builds with your scroll, stage by stage, and the stage being drawn is
+   the one lit in the list; pointing at a stage isolates it in the drawing.
+   Numbers roll like an odometer. The header marks the section you are in.
+   ========================================================================== */
+.iso-draw .mg-iso-stage{opacity:1;transition:opacity .35s var(--ease)}
+.iso-draw .mg-iso-stage path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s var(--ease-out)}
+.iso-draw .mg-iso-stage.on path{stroke-dashoffset:0}
+.iso-draw .mg-iso-stage path[class^="mg-fill"],.iso-draw .mg-iso-stage circle{stroke-dasharray:none;opacity:0;transition:opacity .6s var(--ease-out) .35s}
+.iso-draw .mg-iso-stage.on path[class^="mg-fill"],.iso-draw .mg-iso-stage.on circle{opacity:1}
+.mg-scope-key li{cursor:default;transition:opacity .35s var(--ease-out),color .35s var(--ease-out)}
+.mg-scope[data-focus="1"] .mg-iso-stage.on:not(:nth-child(3)){opacity:.14}
+.mg-scope[data-focus="1"] .mg-scope-key li:not(:nth-child(1)){opacity:.4}
+.mg-scope[data-focus="1"] .mg-scope-key li:nth-child(1){opacity:1;color:#fff}
+.mg-scope[data-focus="2"] .mg-iso-stage.on:not(:nth-child(4)){opacity:.14}
+.mg-scope[data-focus="2"] .mg-scope-key li:not(:nth-child(2)){opacity:.4}
+.mg-scope[data-focus="2"] .mg-scope-key li:nth-child(2){opacity:1;color:#fff}
+.mg-scope[data-focus="3"] .mg-iso-stage.on:not(:nth-child(5)){opacity:.14}
+.mg-scope[data-focus="3"] .mg-scope-key li:not(:nth-child(3)){opacity:.4}
+.mg-scope[data-focus="3"] .mg-scope-key li:nth-child(3){opacity:1;color:#fff}
+.mg-scope[data-focus="4"] .mg-iso-stage.on:not(:nth-child(6)){opacity:.14}
+.mg-scope[data-focus="4"] .mg-scope-key li:not(:nth-child(4)){opacity:.4}
+.mg-scope[data-focus="4"] .mg-scope-key li:nth-child(4){opacity:1;color:#fff}
+
+/* odometer numbers */
+.odo{display:inline-flex;direction:ltr}
+.od{display:inline-block;height:1em;overflow:hidden;line-height:1}
+.ods{display:flex;flex-direction:column;transform:translateY(0);transition:transform 1.7s cubic-bezier(.16,1,.3,1) var(--dl,0ms)}
+.ods span{display:block;height:1em;line-height:1}
+.stat.in .ods{transform:translateY(calc(var(--v) * -1em))}
+
+/* header: a pill slides to the section you are reading (desktop) */
+.menu{position:relative}
+.menu a{z-index:1}
+.menu-pill{position:absolute;top:0;left:0;height:100%;border-radius:var(--r-control);background:var(--accent-tint);
+  opacity:0;pointer-events:none;z-index:0;transition:transform .5s var(--ease-out),width .5s var(--ease-out),opacity .3s var(--ease)}
+.menu-pill.on{opacity:1}
+.menu.spy a.active{background:transparent}
+
+@media (prefers-reduced-motion:reduce){
+  .ods{transition:none}
+  .iso-draw .mg-iso-stage path{transition:none}
+  .menu-pill{transition:none}
+}
+/* Arabic: the figure lines up with its label on the right */
+[dir="rtl"] .stat .num{justify-content:flex-end}

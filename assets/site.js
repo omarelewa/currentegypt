@@ -119,6 +119,7 @@
     var nums = [].slice.call(doc.querySelectorAll('.stat .num, .hstat b'));
     if (!nums.length) return;
     nums.forEach(function (el) {
+      if (el.closest('.home .stats')) return; /* homepage numbers roll like an odometer (motion v6) */
       var node = el.firstChild;
       if (!node || node.nodeType !== 3) return;
       var m = /^\s*(\d+)/.exec(node.nodeValue);
@@ -1915,5 +1916,89 @@ function svcFallbackAnchor(doc) {
     };
     place();
     addEventListener('resize', place, { passive: true });
+  }
+})();
+
+/* ==========================================================================
+   Motion v6 (2026-11): scroll-built scope drawing, odometer numbers,
+   section-aware header.
+   ========================================================================== */
+(function motion6() {
+  var doc = document;
+  if (!doc.body.classList.contains('home')) return;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+  /* odometer numbers (the real figure stays readable to screen readers) */
+  [].slice.call(doc.querySelectorAll('.stats .stat .num')).forEach(function (el) {
+    var node = el.firstChild;
+    if (!node || node.nodeType !== 3) return;
+    var val = node.nodeValue.trim();
+    if (!/^\d+$/.test(val)) return;
+    var sr = doc.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = val;
+    var odo = doc.createElement('span');
+    odo.className = 'odo';
+    odo.setAttribute('aria-hidden', 'true');
+    val.split('').forEach(function (d, i) {
+      var od = doc.createElement('span'), ods = doc.createElement('span');
+      od.className = 'od'; ods.className = 'ods';
+      for (var n = 0; n <= 9; n++) { var s = doc.createElement('span'); s.textContent = n; ods.appendChild(s); }
+      ods.style.setProperty('--v', REDUCED.matches ? d : d);
+      ods.style.setProperty('--dl', (i * 110) + 'ms');
+      od.appendChild(ods); odo.appendChild(od);
+    });
+    el.replaceChild(odo, node);
+    el.insertBefore(sr, odo);
+  });
+
+  /* scope drawing (built by isoScrub): lines draw in instead of fading,
+     and pointing at a step in the list isolates its stage */
+  var scope = doc.querySelector('.mg-scope');
+  var fig = scope && scope.querySelector('.mg-scope-fig');
+  if (fig && fig.querySelector('.mg-iso-stage')) {
+    [].slice.call(fig.querySelectorAll('.mg-iso-stage path')).forEach(function (pth) {
+      pth.setAttribute('pathLength', '1');
+    });
+    fig.classList.add('iso-draw');
+    [].slice.call(scope.querySelectorAll('.mg-scope-key li')).forEach(function (li, i) {
+      var on = function () { scope.setAttribute('data-focus', i + 1); };
+      var off = function () { scope.removeAttribute('data-focus'); };
+      li.addEventListener('pointerenter', on);
+      li.addEventListener('pointerleave', off);
+      li.addEventListener('click', function () {
+        if (scope.getAttribute('data-focus') == i + 1) off(); else on();
+      });
+    });
+  }
+
+  /* header: a pill slides to the link of the section in view (desktop) */
+  var menu = doc.querySelector('.hdr .menu');
+  if (menu && 'IntersectionObserver' in window) {
+    var links = [].slice.call(menu.querySelectorAll('a[href^="#"]'));
+    var pill = doc.createElement('span');
+    pill.className = 'menu-pill';
+    pill.setAttribute('aria-hidden', 'true');
+    menu.insertBefore(pill, menu.firstChild);
+    menu.classList.add('spy');
+    var place = function (a) {
+      links.forEach(function (l) { l.classList.toggle('active', l === a); });
+      if (!a) { pill.classList.remove('on'); return; }
+      pill.style.width = a.offsetWidth + 'px';
+      pill.style.transform = 'translateX(' + a.offsetLeft + 'px)';
+      pill.classList.add('on');
+    };
+    var current = null;
+    var secs = links.map(function (l) { return doc.querySelector(l.getAttribute('href')); }).filter(Boolean);
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var a = links.filter(function (l) { return l.getAttribute('href') === '#' + e.target.id; })[0];
+        if (e.isIntersecting) current = a;
+        else if (current === a) current = null;
+      });
+      place(current);
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    secs.forEach(function (s) { io.observe(s); });
+    addEventListener('resize', function () { place(current); }, { passive: true });
   }
 })();
