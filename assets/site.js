@@ -1631,8 +1631,6 @@ function svcFallbackAnchor(doc) {
     [].slice.call(ul.children).forEach(function (li, i) { li.style.setProperty('--i', Math.min(i, 10)); });
   });
 
-  if (!home) return;
-
   /* word-by-word headlines. Words stay whole (Arabic letters keep joining),
      the text is unchanged for screen readers, inline tags like <em> survive. */
   function split(el) {
@@ -1658,7 +1656,7 @@ function svcFallbackAnchor(doc) {
     })(el);
     el.classList.add('split');
   }
-  split(doc.querySelector('.hero h1'));
+  split(doc.querySelector('.hero h1') || doc.querySelector('.page-hero h1'));
   [].slice.call(doc.querySelectorAll('.sec-head h2, .cine h2')).forEach(split);
 
   /* flagship: the caption lands once the photo has opened (pinned), or when
@@ -1685,7 +1683,7 @@ function svcFallbackAnchor(doc) {
 
   /* magnetic buttons: desktop pointers only */
   if (window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    [].slice.call(doc.querySelectorAll('.hero-cta .btn, .hdr .btn-primary, .cta .btn, .careers .btn')).forEach(function (b) {
+    [].slice.call(doc.querySelectorAll('.hero-cta .btn, .hdr .btn-primary, .cta .btn, .careers .btn, .cta-strip .btn, .aside .btn-primary')).forEach(function (b) {
       b.classList.add('magnet');
       b.addEventListener('pointermove', function (e) {
         var r = b.getBoundingClientRect();
@@ -1730,7 +1728,7 @@ function svcFallbackAnchor(doc) {
 (function motion3() {
   var doc = document, root = doc.documentElement;
   var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
-  if (REDUCED.matches || !doc.body.classList.contains('home')) return;
+  if (REDUCED.matches) return;
 
   /* motion budget */
   var conn = navigator.connection || {};
@@ -1791,7 +1789,7 @@ function svcFallbackAnchor(doc) {
 
   /* desktop cards: tilt toward the cursor, light follows it */
   if (!lite && window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    [].slice.call(doc.querySelectorAll('.home .proj, .home .svc, .home .person .im')).forEach(function (c) {
+    [].slice.call(doc.querySelectorAll('.proj, .svc, .person .im')).forEach(function (c) {
       c.classList.add('tilt');
       if (getComputedStyle(c).position === 'static') c.style.position = 'relative';
       var sh = doc.createElement('span');

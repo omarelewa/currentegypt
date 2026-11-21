@@ -1609,8 +1609,8 @@ main:focus{outline:none}
 
 /* desktop cards: a slight tilt toward the cursor and a soft light sheen */
 .tilt{transform-style:preserve-3d}
-.js .home .tilt.tilting{transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-4px);transition:transform .14s linear,box-shadow .3s var(--ease)}
-.js .home .tilt.settle{transition:transform .6s var(--ease-out),box-shadow .3s var(--ease)}
+.js .tilt.tilting{transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-4px);transition:transform .14s linear,box-shadow .3s var(--ease)}
+.js .tilt.settle{transition:transform .6s var(--ease-out),box-shadow .3s var(--ease)}
 .sheen{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
   background:radial-gradient(520px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.18),transparent 45%);border-radius:inherit}
 .tilt.tilting .sheen{opacity:1}
@@ -1787,3 +1787,63 @@ img.ld-in{transition:opacity .6s var(--ease-out)}
 }
 /* Arabic: the figure lines up with its label on the right */
 [dir="rtl"] .stat .num{justify-content:flex-end}
+
+/* ==========================================================================
+   Inner pages elevation (2026-11): the homepage treatment, carried through.
+   Project and service pages open on their own photo, full-bleed under the
+   title; the other pages keep the navy band with bigger type and more air.
+   ========================================================================== */
+/* photo masthead */
+.page-hero.photo{min-height:max(520px,calc(80svh - 70px));display:flex;align-items:flex-end;isolation:isolate;
+  padding:clamp(120px,14vw,180px) 0 clamp(44px,6vw,84px)}
+.page-hero.photo>.wrap{width:100%}
+.page-hero.photo::before{display:none}
+.page-hero.photo::after{z-index:1;background:linear-gradient(to top,rgba(10,14,30,.92) 0%,rgba(10,14,30,.72) 40%,rgba(10,14,30,.34) 72%,rgba(10,14,30,.12) 100%)}
+.page-hero.photo .kicker{color:#fff;opacity:.9}
+.page-hero.photo .crumb,.page-hero.photo .kicker{text-shadow:0 1px 12px rgba(0,0,0,.45)}
+.ph-media{position:absolute;inset:0;z-index:0;overflow:clip}
+.ph-media img{width:100%;height:100%;object-fit:cover}
+.page-hero.photo .mg-survey{display:none}
+.page-hero.photo h1{font-size:clamp(36px,min(5.6vw,8.6vh),80px);line-height:1.04;letter-spacing:-.035em;max-width:17ch;text-shadow:0 2px 28px rgba(0,0,0,.25)}
+.page-hero.photo .wrap>p{color:rgba(255,255,255,.88);max-width:58ch}
+.page-hero.photo .crumb{color:rgba(255,255,255,.72)}
+.page-hero.photo .crumb a{color:rgba(255,255,255,.92)}
+@media (max-width:1100px){.page-hero.photo{padding-bottom:clamp(36px,6vw,68px)}}
+@media (max-width:560px){
+  .page-hero.photo{min-height:calc(74svh - 70px);padding-top:110px}
+  .page-hero.photo h1{font-size:clamp(32px,9vw,40px)}
+  .page-hero.photo .wrap>p{font-size:16px}
+}
+.detail>div>h2:first-child{margin-top:0}
+
+/* navy bands: bigger type, more air */
+body:not(.home) .page-hero:not(.photo){padding-top:clamp(104px,13vw,176px)}
+body:not(.home) .page-hero:not(.photo) h1{font-size:clamp(36px,6vw,80px);line-height:1.04;letter-spacing:-.035em;max-width:17ch}
+@media (max-width:560px){body:not(.home) .page-hero:not(.photo) h1{font-size:clamp(32px,9vw,40px)}}
+body:not(.home) .sec{padding:clamp(72px,10vw,136px) 0}
+body:not(.home) .sec-head h2{font-size:clamp(32px,5vw,64px);line-height:1.05;letter-spacing:-.035em}
+.detail h2{font-size:clamp(24px,2.8vw,34px);letter-spacing:-.025em}
+
+/* motion */
+.page-hero h1.split{animation:none}
+.page-hero h1.split .wi{animation:wordUp .85s var(--ease-out) calc(.18s + var(--i,0) * 38ms) both}
+.page-hero.photo .wrap>p{animation-delay:.5s}
+.ph-media{animation:heroIn 1.5s var(--ease-out) both}
+.proj{overflow:clip}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .ph-media img{animation:phPara linear both;animation-timeline:scroll(root);animation-range:0 100svh}
+    .page-hero.photo>.wrap{animation:heroExit linear both;animation-timeline:scroll(root);animation-range:10vh 70vh}
+    .aside .facts li{animation:factIn linear both;animation-timeline:view();animation-range:entry 0% entry 90%}
+    .gallery img{animation:galIn linear both;animation-timeline:view();animation-range:entry 0% cover 30%}
+  }
+  @media (prefers-reduced-motion:no-preference) and (min-width:761px){
+    body:not(.home) .proj img{scale:1.12;animation:homePara linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+  }
+}
+@keyframes phPara{to{translate:0 16%}}
+@keyframes factIn{from{opacity:0;translate:0 10px}to{opacity:1;translate:none}}
+@keyframes galIn{from{opacity:.25;scale:.93}to{opacity:1;scale:1}}
+@media (prefers-reduced-motion:reduce){
+  .ph-media,.ph-media img,.page-hero h1.split .wi,.page-hero.photo>.wrap,.aside .facts li,.gallery img{animation:none}
+}
