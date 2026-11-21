@@ -1613,3 +1613,260 @@ function svcFallbackAnchor(doc) {
     fig.classList.add('in');
   }
 })();
+
+/* ==========================================================================
+   Motion v2 (2026-11): word-split headlines, the pinned flagship caption,
+   magnetic buttons, a header that steps aside, menu row cascade.
+   Everything here is skipped under prefers-reduced-motion.
+   ========================================================================== */
+(function motion() {
+  var doc = document, body = doc.body;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  if (REDUCED.matches) return;
+  var home = body.classList.contains('home');
+
+  /* menu: give each row its place in the cascade (capped so long lists don't drag) */
+  [].slice.call(doc.querySelectorAll('.mnav-list')).forEach(function (ul) {
+    [].slice.call(ul.children).forEach(function (li, i) { li.style.setProperty('--i', Math.min(i, 10)); });
+  });
+
+  if (!home) return;
+
+  /* word-by-word headlines. Words stay whole (Arabic letters keep joining),
+     the text is unchanged for screen readers, inline tags like <em> survive. */
+  function split(el) {
+    if (!el || el.classList.contains('split')) return;
+    var i = 0;
+    (function walk(node) {
+      [].slice.call(node.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) {
+          var frag = doc.createDocumentFragment();
+          n.nodeValue.split(/(\s+)/).forEach(function (p) {
+            if (!p) return;
+            if (/^\s+$/.test(p)) { frag.appendChild(doc.createTextNode(' ')); return; }
+            var w = doc.createElement('span'), wi = doc.createElement('span');
+            w.className = 'w'; wi.className = 'wi'; wi.textContent = p;
+            wi.style.setProperty('--i', i++);
+            w.appendChild(wi); frag.appendChild(w);
+          });
+          node.replaceChild(frag, n);
+        } else if (n.nodeType === 1 && n.tagName !== 'BR' && n.tagName !== 'SVG') {
+          walk(n);
+        }
+      });
+    })(el);
+    el.classList.add('split');
+  }
+  split(doc.querySelector('.hero h1'));
+  [].slice.call(doc.querySelectorAll('.sec-head h2, .cine h2')).forEach(split);
+
+  /* flagship: the caption lands once the photo has opened (pinned), or when
+     the band is well in view (browsers without scroll-driven animation) */
+  var cine = doc.querySelector('.cine');
+  if (cine) {
+    var pinned = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+    if (pinned) {
+      var onScroll = function () {
+        var r = cine.getBoundingClientRect(), span = r.height - innerHeight;
+        var p = span > 0 ? -r.top / span : 0;
+        cine.classList.toggle('lit', p > 0.42);
+      };
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    } else if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) cine.classList.add('lit'); });
+      }, { threshold: 0.4 }).observe(cine);
+    } else {
+      cine.classList.add('lit');
+    }
+  }
+
+  /* magnetic buttons: desktop pointers only */
+  if (window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    [].slice.call(doc.querySelectorAll('.hero-cta .btn, .hdr .btn-primary, .cta .btn, .careers .btn')).forEach(function (b) {
+      b.classList.add('magnet');
+      b.addEventListener('pointermove', function (e) {
+        var r = b.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+        var dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+        b.classList.add('pull');
+        b.style.translate = (dx * 6).toFixed(1) + 'px ' + (dy * 5).toFixed(1) + 'px';
+      });
+      b.addEventListener('pointerleave', function () {
+        b.classList.remove('pull');
+        b.style.translate = '';
+      });
+    });
+  }
+
+  /* header steps aside while scrolling down, returns on the way up */
+  var hdr = doc.getElementById('hdr'), mnav = doc.getElementById('mnav');
+  if (hdr) {
+    var lastY = scrollY, ticking = false;
+    addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var y = scrollY, d = y - lastY;
+        var menuOpen = mnav && mnav.classList.contains('open');
+        if (menuOpen || y < 160 || hdr.contains(doc.activeElement)) hdr.classList.remove('hdr-hide');
+        else if (d > 6) hdr.classList.add('hdr-hide');
+        else if (d < -6) hdr.classList.remove('hdr-hide');
+        if (Math.abs(d) > 6) lastY = y;
+        ticking = false;
+      });
+    }, { passive: true });
+    hdr.addEventListener('focusin', function () { hdr.classList.remove('hdr-hide'); });
+  }
+})();
+
+/* ==========================================================================
+   Motion v3 (2026-11): gallery position dots, a marquee that answers your
+   scroll speed, desktop card tilt with a light sheen, and a motion budget
+   that calms things down on data saver or low-power devices.
+   ========================================================================== */
+(function motion3() {
+  var doc = document, root = doc.documentElement;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  if (REDUCED.matches || !doc.body.classList.contains('home')) return;
+
+  /* motion budget */
+  var conn = navigator.connection || {};
+  var lite = conn.saveData || (window.matchMedia && matchMedia('(prefers-reduced-data: reduce)').matches) ||
+             (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+  if (lite) root.classList.add('lite');
+
+  /* phone gallery: position dots that follow the swipe */
+  var reel = doc.querySelector('.home .proj-grid');
+  if (reel) {
+    var cards = [].slice.call(reel.children);
+    var dots = doc.createElement('div');
+    dots.className = 'reel-dots';
+    dots.setAttribute('aria-hidden', 'true');
+    cards.forEach(function () { dots.appendChild(doc.createElement('i')); });
+    reel.parentNode.insertBefore(dots, reel.nextSibling);
+    var mark = function () {
+      var w = cards[0] ? cards[0].getBoundingClientRect().width + 12 : 1;
+      var i = Math.round(Math.abs(reel.scrollLeft) / w);
+      if (reel.scrollWidth - reel.clientWidth - Math.abs(reel.scrollLeft) < 4) i = cards.length - 1;
+      [].forEach.call(dots.children, function (d, k) { d.classList.toggle('on', k === i); });
+    };
+    var q = false;
+    reel.addEventListener('scroll', function () {
+      if (!q) { q = true; requestAnimationFrame(function () { q = false; mark(); }); }
+    }, { passive: true });
+    mark();
+  }
+
+  /* marquee: speeds up with your scroll, runs backwards when you scroll up,
+     then eases back to its own pace; paused while off screen */
+  var track = doc.querySelector('.mg-marquee .mg-track');
+  if (track && track.getAnimations) {
+    var anim = track.getAnimations()[0];
+    if (anim) {
+      var rate = 1, target = 1, lastY = scrollY, running = false, visible = true;
+      var loop = function () {
+        rate += (target - rate) * 0.08;
+        target += (1 - target) * 0.06;
+        anim.playbackRate = rate;
+        if (Math.abs(rate - 1) > 0.01 || Math.abs(target - 1) > 0.01) requestAnimationFrame(loop);
+        else { anim.playbackRate = 1; running = false; }
+      };
+      addEventListener('scroll', function () {
+        var v = scrollY - lastY; lastY = scrollY;
+        if (!visible) return;
+        target = Math.max(-4, Math.min(6, 1 + v * 0.12));
+        if (!running) { running = true; requestAnimationFrame(loop); }
+      }, { passive: true });
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          visible = es[0].isIntersecting;
+          if (visible) anim.play(); else anim.pause();
+        }).observe(track.parentNode);
+      }
+    }
+  }
+
+  /* desktop cards: tilt toward the cursor, light follows it */
+  if (!lite && window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    [].slice.call(doc.querySelectorAll('.home .proj, .home .svc, .home .person .im')).forEach(function (c) {
+      c.classList.add('tilt');
+      if (getComputedStyle(c).position === 'static') c.style.position = 'relative';
+      var sh = doc.createElement('span');
+      sh.className = 'sheen';
+      sh.setAttribute('aria-hidden', 'true');
+      c.appendChild(sh);
+      c.addEventListener('pointermove', function (e) {
+        var r = c.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.classList.remove('settle');
+        c.classList.add('tilting');
+        c.style.setProperty('--ry', ((x - 0.5) * 6).toFixed(2) + 'deg');
+        c.style.setProperty('--rx', ((0.5 - y) * 5).toFixed(2) + 'deg');
+        c.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+        c.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+      });
+      c.addEventListener('pointerleave', function () {
+        c.classList.remove('tilting');
+        c.classList.add('settle');
+      });
+    });
+  }
+})();
+
+/* ==========================================================================
+   Motion v4 (2026-11): reading text that brightens as you read, and lazy
+   photos that fade in as they arrive.
+   ========================================================================== */
+(function motion4() {
+  var doc = document;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  if (REDUCED.matches) return;
+
+  /* lazy photos fade in when decoded (any page) */
+  [].slice.call(doc.querySelectorAll('img[loading="lazy"]')).forEach(function (im) {
+    if (im.complete && im.naturalWidth) return;
+    im.classList.add('ld');
+    var done = function () {
+      im.classList.add('ld-in');
+      requestAnimationFrame(function () { im.classList.remove('ld'); });
+    };
+    im.addEventListener('load', done, { once: true });
+    im.addEventListener('error', done, { once: true });
+  });
+
+  if (!doc.body.classList.contains('home')) return;
+
+  /* reading text: each word brightens as the paragraph moves up the screen */
+  var paras = [].slice.call(doc.querySelectorAll('#services .sec-head p, #clients .sec-head p, .careers .txt p'));
+  if (!paras.length) return;
+  paras.forEach(function (p) {
+    var words = p.textContent.trim().split(/\s+/);
+    p.textContent = '';
+    words.forEach(function (w, i) {
+      var s = doc.createElement('span');
+      s.className = 'sw';
+      s.textContent = w;
+      s.style.setProperty('--i', i);
+      p.appendChild(s);
+      if (i < words.length - 1) p.appendChild(doc.createTextNode(' '));
+    });
+    p.style.setProperty('--n', words.length);
+    p.classList.add('scrub');
+  });
+  var q = false;
+  var measure = function () {
+    q = false;
+    var vh = innerHeight;
+    paras.forEach(function (p) {
+      var r = p.getBoundingClientRect();
+      /* starts as its top passes 88% of the screen, complete by 40% */
+      var t = (vh * 0.88 - r.top) / (vh * 0.48);
+      p.style.setProperty('--p', Math.max(0, Math.min(1, t)).toFixed(3));
+    });
+  };
+  addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(measure); } }, { passive: true });
+  addEventListener('resize', measure, { passive: true });
+  measure();
+})();

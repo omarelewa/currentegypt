@@ -1441,3 +1441,246 @@ main:focus{outline:none}
 [dir="rtl"] .mnav-g h2{font-size:14px}
 [dir="rtl"] .mnav-list a{font-size:18px}
 [dir="rtl"] .mnav-search input[type=search]{direction:rtl}
+
+/* ==========================================================================
+   Homepage elevation (2026-11). Same palette, fonts and components; the
+   homepage gets bigger type, more air, full-screen photography and calm
+   scroll motion. Scoped to body.home so no other page moves.
+   ========================================================================== */
+/* hero: the photo fills the first screen and is actually seen */
+.home .hero{min-height:max(560px,calc(100svh - 110px));display:flex;flex-direction:column;justify-content:flex-end}
+.home .hero-media img{opacity:1;filter:none}
+.home .hero-media::after{background:linear-gradient(180deg,rgba(12,15,38,.28) 0%,rgba(12,15,38,.18) 30%,rgba(12,15,38,.62) 62%,rgba(12,15,38,.92) 100%)}
+.home .hero-grid,.home .hero .mg-survey,.home .hero .mg-survey-band{display:none}
+.home .hero .wrap{width:100%;box-sizing:border-box;padding-top:clamp(72px,12vh,160px);padding-bottom:clamp(44px,8vh,96px)}
+.home .hero h1{font-size:clamp(40px,min(6.4vw,9.5vh),96px);line-height:1.02;letter-spacing:-.04em;max-width:15ch;margin-top:18px}
+@media(max-width:520px){.home .hero h1{font-size:40px;max-width:13ch}}
+.home .hero .lead{font-size:clamp(18px,1.8vw,23px);max-width:36ch;margin-top:20px;color:#fff;opacity:.88}
+.home .hero-cta{margin-top:30px;gap:12px}
+.home .hero-cta .btn{min-height:52px;padding-inline:24px}
+@media(max-width:1000px){.home .hero{min-height:max(560px,calc(100svh - 110px - 70px))}}
+@media(max-width:520px){.home .hero-cta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .home .hero-cta .btn{justify-content:center;padding-inline:10px;font-size:15px;min-height:50px;text-align:center}
+  .home .hero .wrap{padding-top:96px;padding-bottom:36px}}
+
+/* more air, bigger headlines */
+.home .sec{padding:clamp(88px,12vw,168px) 0}
+.home .sec-head{max-width:880px;margin-bottom:clamp(40px,6vw,76px)}
+.home .sec-head h2{font-size:clamp(34px,6vw,76px);line-height:1.04;letter-spacing:-.04em}
+.home .sec-head p{font-size:clamp(17px,1.8vw,21px);line-height:1.55;max-width:58ch}
+.home .sec-head.center p{margin-inline:auto}
+[dir="rtl"].home .sec-head h2,[dir="rtl"] .home .sec-head h2,[dir="rtl"].home .hero h1{line-height:1.25;letter-spacing:0}
+.home .stats .wrap{gap:clamp(28px,4vw,48px)}
+.home .stat .num{font-size:clamp(56px,8.4vw,112px);letter-spacing:-.045em}
+.home .stat .lbl{font-size:clamp(15px,1.4vw,17px)}
+
+/* cinematic flagship band */
+.cine{position:relative;background:var(--ink);color:#fff;overflow:hidden}
+.cine-link{display:block;position:relative;min-height:clamp(560px,92svh,940px);color:inherit;text-decoration:none}
+.cine-media{position:absolute;inset:0}
+.cine-media img{width:100%;height:100%;object-fit:cover;display:block}
+.cine-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,15,38,0) 38%,rgba(12,15,38,.55) 66%,rgba(12,15,38,.9))}
+.cine-copy{position:absolute;inset-inline:0;bottom:0;z-index:1;padding-bottom:clamp(44px,8vw,96px)}
+.cine .eyebrow{color:var(--silver)}
+.cine .eyebrow::before{background:var(--silver)}
+.cine h2{color:#fff;font-size:clamp(36px,6.6vw,92px);line-height:1.03;letter-spacing:-.04em;max-width:13ch;margin:16px 0 0}
+[dir="rtl"] .cine h2{line-height:1.25;letter-spacing:0}
+.cine p{color:var(--on-navy);font-size:clamp(16px,1.6vw,19px);margin-top:16px;max-width:52ch}
+.cine-go{display:inline-flex;gap:8px;margin-top:24px;font-family:Manrope;font-weight:700;font-size:16px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.45);transition:border-color .3s var(--ease)}
+.cine-link:hover .cine-go,.cine-link:focus-visible .cine-go{border-color:#fff}
+.cine-link:focus-visible{outline:3px solid #fff;outline-offset:-6px}
+@media(max-width:1000px){.cine-copy{padding-bottom:calc(36px + 70px + env(safe-area-inset-bottom))}}
+
+/* project reel: a swipe gallery on phones, a calm grid above */
+.home .proj-grid{gap:clamp(16px,2vw,24px)}
+@media(max-width:760px){
+  .home .proj-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;
+    margin-inline:-28px;padding:0 28px 6px;scroll-padding-inline:28px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .home .proj-grid::-webkit-scrollbar{display:none}
+  .home .proj-grid .proj{flex:0 0 82%;scroll-snap-align:start}
+  .home .proj-grid .proj.reveal{opacity:1;transform:none}
+}
+
+/* ==========================================================================
+   Motion v2 (2026-11): staged hero, word-by-word headlines, a pinned
+   flagship photo that opens to full screen, photo parallax, page
+   cross-fades, press feedback, a header that steps aside. Every piece is
+   off under prefers-reduced-motion; without scroll-driven animation
+   support the page is simply static.
+   ========================================================================== */
+.home .reveal{transform:translateY(28px);transition-duration:.9s}
+.home .reveal.in{transform:none}
+
+/* word-by-word headlines (site.js wraps each word in .w > .wi) */
+.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em}
+[dir="rtl"] .split .w{padding-top:.08em;margin-top:-.08em}
+.split .wi{display:inline-block;will-change:transform}
+.js .reveal .split .wi,.js .cine .split .wi{transform:translateY(112%)}
+.js .reveal.in .split .wi,.js .cine.lit .split .wi{transform:none;transition:transform .9s var(--ease-out) calc(var(--i,0) * 45ms)}
+
+/* staged hero: photo settles, then eyebrow, words, lead, buttons */
+@keyframes heroIn{from{opacity:0;scale:1.08}to{opacity:1;scale:1}}
+@keyframes wordUp{from{transform:translateY(112%)}to{transform:none}}
+.home .hero-media{animation:heroIn 1.5s var(--ease-out) both}
+.home .hero .wrap > .eyebrow{animation:fadeUp .7s var(--ease-out) .2s both}
+.home .hero .wrap h1.split{animation:none}
+.home .hero h1.split .wi{animation:wordUp .85s var(--ease-out) calc(.3s + var(--i,0) * 40ms) both}
+.home .hero .wrap .lead{animation:fadeUp .8s var(--ease-out) .72s both}
+.home .hero .wrap .hero-cta{animation:fadeUp .8s var(--ease-out) .86s both}
+
+/* the flagship caption rises once the photo is open */
+.js .cine-copy{opacity:0;translate:0 28px;transition:opacity .8s var(--ease-out),translate .8s var(--ease-out)}
+.js .cine.lit .cine-copy{opacity:1;translate:0 0}
+
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    /* hero photo drifts as you leave it */
+    .home .hero-media img{animation:homeHeroDrift linear both;animation-timeline:scroll(root);animation-range:0 100vh}
+    /* pinned flagship: a rounded card that opens to the full screen */
+    .cine{height:220svh;overflow:visible;background:var(--paper);view-timeline-name:--cine}
+    .cine-link{position:sticky;top:0;height:100svh;min-height:0;overflow:hidden}
+    .cine-media{animation:cineOpen linear both;animation-timeline:--cine;animation-range:contain 0% contain 55%}
+    .cine-media img{animation:cineImg linear both;animation-timeline:--cine;animation-range:contain 0% contain 70%}
+    /* photo parallax: the image drifts a little slower than the page */
+    .home .svc .im img,.home .proj img,.home .careers .im img{scale:1.14;animation:homePara linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+    @media (max-width:760px){.home .proj img{scale:1;animation:none}}
+  }
+}
+@keyframes homeHeroDrift{from{transform:none}to{transform:scale(1.08) translateY(3%)}}
+@keyframes cineOpen{from{clip-path:inset(9% 6% round 24px)}to{clip-path:inset(0 round 0)}}
+@keyframes cineImg{from{transform:scale(1.18)}to{transform:none}}
+@keyframes homePara{from{translate:0 -6%}to{translate:0 6%}}
+
+/* page cross-fade between pages (browsers without it just load normally) */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .26s var(--ease) both}
+::view-transition-new(root){animation:vtIn .45s var(--ease-out) both}
+@keyframes vtOut{to{opacity:0}}
+@keyframes vtIn{from{opacity:0;transform:translateY(10px)}}
+.hdr{view-transition-name:site-hdr}
+.mbar{view-transition-name:site-mbar}
+
+/* press feedback: things you touch dip a little */
+.btn,.proj,.svc,.mbar a,.mnav-list a,.cine-link,.person{-webkit-tap-highlight-color:transparent}
+.btn:active,.mbar a:active{transform:scale(.965);transition-duration:.12s}
+.proj:active,.svc:active,.person:active{transform:scale(.985);transition:transform .15s var(--ease)}
+.mnav-list a:active{background:rgba(255,255,255,.06)}
+
+/* magnetic buttons (desktop pointer only; site.js sets translate) */
+.magnet{transition:translate .45s var(--ease-out),background .28s var(--ease),color .28s var(--ease),border-color .28s var(--ease),box-shadow .28s var(--ease)}
+.magnet.pull{transition:translate .12s linear,background .28s var(--ease),color .28s var(--ease),border-color .28s var(--ease)}
+
+/* header steps aside while you read, returns when you scroll up */
+.hdr{transition:transform .38s var(--ease-out),box-shadow .3s var(--ease),border-color .3s var(--ease),background .3s var(--ease)}
+.hdr.hdr-hide{transform:translateY(-100%)}
+
+/* menu choreography: rows cascade in after the groups */
+.js .mnav .mnav-list li{opacity:0;transform:translateY(10px)}
+.mnav.open .mnav-list li{opacity:1;transform:none;transition:opacity .42s var(--ease-out) calc(.16s + var(--i,0) * 28ms),transform .42s var(--ease-out) calc(.16s + var(--i,0) * 28ms)}
+
+/* --- Motion v3 (2026-11): smarter, scroll-aware motion ------------------ */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    /* hero copy steps back as you scroll past it */
+    .home .hero .wrap{animation:heroExit linear both;animation-timeline:scroll(root);animation-range:8vh 72vh}
+    /* phone gallery: the card in view is in focus, its neighbours rest back */
+    @media (max-width:760px){
+      .home .proj-grid .proj{animation:reelFocus linear both;animation-timeline:view(inline);animation-range:cover 0% cover 100%}
+    }
+    /* how we work: a line fills across the five steps as you read them */
+    @media (min-width:901px){
+      .home .steps::before{content:"";position:absolute;top:0;inset-inline:0;height:2px;background:var(--cobalt-lt);
+        transform-origin:left;transform:scaleX(0);animation:stepLine linear both;animation-timeline:view();animation-range:entry 60% cover 55%}
+      [dir="rtl"] .home .steps::before{transform-origin:right}
+    }
+  }
+}
+@keyframes heroExit{to{opacity:0;translate:0 -56px}}
+@keyframes reelFocus{0%{scale:.9;opacity:.5}42%,58%{scale:1;opacity:1}100%{scale:.9;opacity:.5}}
+@keyframes stepLine{to{transform:scaleX(1)}}
+
+/* gallery position dots (phones) */
+.reel-dots{display:none}
+@media (max-width:760px){
+  .reel-dots{display:flex;justify-content:center;gap:8px;margin-top:18px}
+  .reel-dots i{width:7px;height:7px;border-radius:999px;background:rgba(12,15,38,.18);transition:width .45s var(--ease-out),background .3s var(--ease)}
+  .reel-dots i.on{width:24px;background:var(--ink)}
+}
+
+/* desktop cards: a slight tilt toward the cursor and a soft light sheen */
+.tilt{transform-style:preserve-3d}
+.js .home .tilt.tilting{transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-4px);transition:transform .14s linear,box-shadow .3s var(--ease)}
+.js .home .tilt.settle{transition:transform .6s var(--ease-out),box-shadow .3s var(--ease)}
+.sheen{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
+  background:radial-gradient(520px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.18),transparent 45%);border-radius:inherit}
+.tilt.tilting .sheen{opacity:1}
+
+/* data saver / weak devices: keep it calm (set by site.js) */
+.lite .home .svc .im img,.lite .home .proj img,.lite .home .careers .im img{animation:none;scale:1}
+.lite .mg-marquee .mg-track{animation-duration:120s}
+
+/* --- Motion v4 (2026-11): reading, lighting, settling ------------------- */
+/* photo frames clip instead of hiding overflow: "hidden" makes each frame its
+   own scroll container, which would cut the photos off the page's scroll timeline */
+.home .svc .im,.home .person .im,.home .proj,.home .careers .im{overflow:clip}
+/* reading text: words brighten as you read down the paragraph (site.js sets --p) */
+.scrub .sw{opacity:clamp(.25, calc(var(--p,1) * var(--n,1) - var(--i,0) + .6), 1);transition:opacity .15s linear}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    /* step dots light up as the progress line reaches them */
+    @media (min-width:901px){
+      .home .steps{view-timeline-name:--steps}
+      .home .steps .step:nth-child(1)::before{animation:stepDot1 linear both;animation-timeline:--steps;animation-range:entry 60% cover 55%}
+      .home .steps .step:nth-child(2)::before{animation:stepDot2 linear both;animation-timeline:--steps;animation-range:entry 60% cover 55%}
+      .home .steps .step:nth-child(3)::before{animation:stepDot3 linear both;animation-timeline:--steps;animation-range:entry 60% cover 55%}
+      .home .steps .step:nth-child(4)::before{animation:stepDot4 linear both;animation-timeline:--steps;animation-range:entry 60% cover 55%}
+      .home .steps .step:nth-child(5)::before{animation:stepDot5 linear both;animation-timeline:--steps;animation-range:entry 60% cover 55%}
+    }
+    /* leadership portraits warm from grey into colour as they reach you */
+    .home .person .im img{animation:warmUp linear both;animation-timeline:view();animation-range:entry 40% cover 50%}
+  }
+}
+@keyframes stepDot1{0%,0%{background:var(--silver);box-shadow:0 0 0 4px rgba(195,200,210,.18)}2%,100%{background:var(--cobalt-lt);box-shadow:0 0 0 6px rgba(122,157,240,.28)}}
+@keyframes stepDot2{0%,19%{background:var(--silver);box-shadow:0 0 0 4px rgba(195,200,210,.18)}20.5%,100%{background:var(--cobalt-lt);box-shadow:0 0 0 6px rgba(122,157,240,.28)}}
+@keyframes stepDot3{0%,39%{background:var(--silver);box-shadow:0 0 0 4px rgba(195,200,210,.18)}40.5%,100%{background:var(--cobalt-lt);box-shadow:0 0 0 6px rgba(122,157,240,.28)}}
+@keyframes stepDot4{0%,59%{background:var(--silver);box-shadow:0 0 0 4px rgba(195,200,210,.18)}60.5%,100%{background:var(--cobalt-lt);box-shadow:0 0 0 6px rgba(122,157,240,.28)}}
+@keyframes stepDot5{0%,79%{background:var(--silver);box-shadow:0 0 0 4px rgba(195,200,210,.18)}80.5%,100%{background:var(--cobalt-lt);box-shadow:0 0 0 6px rgba(122,157,240,.28)}}
+@keyframes warmUp{from{filter:grayscale(1) contrast(1.02)}to{filter:grayscale(0) contrast(1)}}
+
+/* quote builder: the service's own questions arrive one after another */
+.qx .field,.qx .qx-multi{animation:fadeUp .42s var(--ease-out) both}
+.qx .frow > :nth-child(2){animation-delay:.07s}
+.qx .frow > :nth-child(3){animation-delay:.14s}
+.qx .chips > *{animation:chipIn .38s var(--ease-mark) both}
+.qx .chips > :nth-child(1){animation-delay:155ms}
+.qx .chips > :nth-child(2){animation-delay:190ms}
+.qx .chips > :nth-child(3){animation-delay:225ms}
+.qx .chips > :nth-child(4){animation-delay:260ms}
+.qx .chips > :nth-child(5){animation-delay:295ms}
+.qx .chips > :nth-child(6){animation-delay:330ms}
+.qx .chips > :nth-child(7){animation-delay:365ms}
+.qx .chips > :nth-child(8){animation-delay:400ms}
+@keyframes chipIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+
+/* lazy photos fade in as they arrive instead of popping (site.js marks them) */
+img.ld{opacity:0}
+img.ld-in{transition:opacity .6s var(--ease-out)}
+
+/* arrows lean the way they point */
+.svc .more,.cine-go,.mnav-all,.svc-more-row .btn{transition:gap .3s var(--ease-out),border-color .3s var(--ease)}
+.svc:hover .more,.cine-link:hover .cine-go,.mnav-all:hover{gap:12px}
+
+@media (prefers-reduced-motion:reduce){
+  .home .reveal,.js .reveal .split .wi,.js .cine .split .wi,.js .cine-copy{transform:none;translate:none;opacity:1}
+  .home .hero-media,.home .hero h1.split .wi,.cine-media,.cine-media img{animation:none}
+  .js .mnav .mnav-list li{opacity:1;transform:none}
+  .hdr.hdr-hide{transform:none}
+  .home .hero .wrap,.home .proj-grid .proj,.home .steps::before{animation:none}
+  .tilt.tilting{transform:none}
+  .scrub .sw{opacity:1}
+  img.ld{opacity:1}
+  .qx .field,.qx .qx-multi,.qx .chips > *{animation:none}
+  .sheen{display:none}
+  @view-transition{navigation:none}
+}
+@media print{.cine{display:none}}
