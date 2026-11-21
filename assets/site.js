@@ -216,6 +216,37 @@
 
   /* ---------- projects filter (with View Transitions when available) ---------- */
   var fbtns = doc.querySelectorAll('.fbtn');
+  /* after every filter: the first card showing becomes the wide feature,
+     and the live count says how many are showing */
+  var pgrid = doc.getElementById('pgrid'), pcount = null;
+  if (pgrid) {
+    pcount = doc.createElement('p');
+    pcount.className = 'pcount';
+    pcount.setAttribute('aria-live', 'polite');
+    pgrid.parentNode.insertBefore(pcount, pgrid);
+    [].slice.call(pgrid.querySelectorAll('.proj')).forEach(function (c, i) {
+      if (!REDUCED.matches) c.style.viewTransitionName = 'pcard-' + i;
+    });
+  }
+  var pgridSync = function () {
+    if (!pgrid) return;
+    var all = [].slice.call(pgrid.querySelectorAll('.proj'));
+    var shown = all.filter(function (c) { return !c.classList.contains('hide'); });
+    if (pcount.nextSibling !== pgrid) pgrid.parentNode.insertBefore(pcount, pgrid);
+    all.forEach(function (c) {
+      var on = c === shown[0], im = c.querySelector('img');
+      c.classList.toggle('feat', on);
+      if (im) {
+        if (!im.dataset.sizes) im.dataset.sizes = im.getAttribute('sizes') || '';
+        im.setAttribute('sizes', on ? '100vw' : im.dataset.sizes);
+      }
+    });
+    var act = doc.querySelector('.fbtn.active');
+    var label = act && act.dataset.f !== 'all' ? ' · ' + act.textContent.trim() : '';
+    pcount.textContent = (AR ? 'عرض ' + shown.length + ' من ' + all.length + ' مشروعًا'
+                             : 'Showing ' + shown.length + ' of ' + all.length + ' projects') + label;
+  };
+  pgridSync();
   if (fbtns.length) {
     fbtns.forEach(function (b) {
       b.onclick = function () {
@@ -226,6 +257,7 @@
           doc.querySelectorAll('#pgrid .proj').forEach(function (p) {
             p.classList.toggle('hide', f !== 'all' && p.dataset.cat !== f);
           });
+          pgridSync();
         };
         if (doc.startViewTransition && !REDUCED.matches) doc.startViewTransition(apply);
         else apply();
@@ -308,6 +340,7 @@
         doc.querySelectorAll('#pgrid .proj').forEach(function (p) {
           p.classList.toggle('hide', p.dataset.cat !== fb.dataset.f);
         });
+        pgridSync();
       }
     }
   } catch (err) { /* no URLSearchParams: show all */ }
@@ -792,7 +825,7 @@
     [].slice.call(el.querySelectorAll('.k')).forEach(function (k, i) {
       k.textContent = rows[i].label;
     });
-    grid.parentNode.insertBefore(el, grid);
+    grid.parentNode.insertBefore(el, doc.querySelector('.pcount') || grid);
     onSeen(el);
   }
 
@@ -2102,5 +2135,26 @@ function svcFallbackAnchor(doc) {
     b.addEventListener('click', function () { if (mq.matches) { col.classList.toggle('open'); sync(); } });
     if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
     sync();
+  });
+})();
+
+/* ==========================================================================
+   Blueprint map (2026-11): a pin and its line in the list light together.
+   ========================================================================== */
+(function mapLink() {
+  var doc = document, band = doc.querySelector('.mapband');
+  if (!band) return;
+  var set = function (k, on) {
+    [].slice.call(band.querySelectorAll('[data-p="' + k + '"]')).forEach(function (el) { el.classList.toggle('hot', on); });
+    if (k === 'egypt') [].slice.call(band.querySelectorAll('.map-detail .pin')).forEach(function (el) { el.classList.toggle('hot', on); });
+  };
+  [].slice.call(band.querySelectorAll('[data-p]')).forEach(function (el) {
+    var k = el.getAttribute('data-p');
+    el.addEventListener('pointerenter', function () { set(k, true); });
+    el.addEventListener('pointerleave', function () { set(k, false); });
+    if (el.tagName === 'LI') {
+      el.addEventListener('focusin', function () { set(k, true); });
+      el.addEventListener('focusout', function () { set(k, false); });
+    }
   });
 })();
