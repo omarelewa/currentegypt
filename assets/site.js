@@ -2075,3 +2075,32 @@ function svcFallbackAnchor(doc) {
   addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(spy); } }, { passive: true });
   spy();
 })();
+
+/* ==========================================================================
+   Footer on phones (2026-11): the link lists fold away under their
+   headings, so the footer is a few lines rather than a long column. The
+   offices stay open: those are the numbers people come down here for.
+   ========================================================================== */
+(function footFold() {
+  var doc = document;
+  if (!window.matchMedia) return;
+  var mq = matchMedia('(max-width: 520px)');
+  [].slice.call(doc.querySelectorAll('footer .col')).forEach(function (col, i) {
+    if (col.classList.contains('foot-brand') || col.querySelector('.office')) return;
+    var h = col.querySelector('h2');
+    if (!h) return;
+    var panel = doc.createElement('div'), inner = doc.createElement('div');
+    panel.className = 'ff-panel'; panel.id = 'ff-' + i; inner.className = 'ff-in';
+    while (h.nextSibling) inner.appendChild(h.nextSibling);
+    panel.appendChild(inner); col.appendChild(panel);
+    var b = doc.createElement('button');
+    b.type = 'button'; b.className = 'ff-btn';
+    b.setAttribute('aria-controls', panel.id);
+    b.textContent = h.textContent; h.textContent = ''; h.appendChild(b);
+    col.classList.add('ff');
+    var sync = function () { b.setAttribute('aria-expanded', mq.matches ? String(col.classList.contains('open')) : 'true'); };
+    b.addEventListener('click', function () { if (mq.matches) { col.classList.toggle('open'); sync(); } });
+    if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
+    sync();
+  });
+})();
