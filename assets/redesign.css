@@ -1622,7 +1622,7 @@ main:focus{outline:none}
 /* --- Motion v4 (2026-11): reading, lighting, settling ------------------- */
 /* photo frames clip instead of hiding overflow: "hidden" makes each frame its
    own scroll container, which would cut the photos off the page's scroll timeline */
-.home .svc .im,.home .person .im,.home .proj,.home .careers .im{overflow:clip}
+.home .svc .im,.home .person .im,.home .proj,.home .careers,.home .careers .im{overflow:clip}
 /* reading text: words brighten as you read down the paragraph (site.js sets --p) */
 .scrub .sw{opacity:clamp(.25, calc(var(--p,1) * var(--n,1) - var(--i,0) + .6), 1);transition:opacity .15s linear}
 @supports (animation-timeline:view()){
@@ -1670,6 +1670,36 @@ img.ld-in{transition:opacity .6s var(--ease-out)}
 .svc .more,.cine-go,.mnav-all,.svc-more-row .btn{transition:gap .3s var(--ease-out),border-color .3s var(--ease)}
 .svc:hover .more,.cine-link:hover .cine-go,.mnav-all:hover{gap:12px}
 
+/* --- Motion v5 (2026-11): pace-aware, stacked, rippled ------------------ */
+/* fade-ins quicken while someone scrolls fast (site.js sets --rd) */
+.home .reveal{transition-duration:var(--rd,.9s)}
+.js .reveal.in .split .wi{transition-duration:var(--rd,.9s)}
+
+@media (prefers-reduced-motion:no-preference){
+  /* phones: service cards stack like sheets as you scroll through them */
+  @media (max-width:560px){
+    .home .svc-grid{gap:18px}
+    .home .svc{position:sticky;top:calc(14px + var(--k,0) * 9px);box-shadow:0 -10px 30px rgba(16,20,50,.07)}
+  }
+  /* careers photo unveils upward */
+  .js .home .careers.reveal .im{clip-path:inset(22% 0 0 0);transition:clip-path 1.1s var(--ease-out) .15s}
+  .js .home .careers.reveal.in .im{clip-path:inset(0)}
+  /* desktop hero: a quiet cue that there is more below, gone once you scroll */
+  @media (min-width:1001px){
+    .home .hero::after{content:"";position:absolute;left:50%;bottom:26px;z-index:3;width:1.5px;height:44px;margin-left:-.75px;
+      background:linear-gradient(rgba(255,255,255,.85),rgba(255,255,255,.85)) 0 0/100% 14px no-repeat,rgba(255,255,255,.22);
+      animation:cueDrop 2.2s var(--ease-out) 1.6s infinite}
+    @supports (animation-timeline:scroll()){
+      .home .hero::after{animation:cueDrop 2.2s var(--ease-out) 1.6s infinite,cueFade linear both;
+        animation-timeline:auto,scroll(root);animation-range:normal,0 18vh}
+    }
+  }
+}
+@keyframes cueDrop{0%{background-position:0 -14px,0 0}70%,100%{background-position:0 44px,0 0}}
+@keyframes cueFade{to{opacity:0}}
+/* client wall: logos ripple out from the centre (site.js sets --rip) */
+.home .logo-wall .cell.reveal{transition-delay:var(--rip,0ms)}
+
 @media (prefers-reduced-motion:reduce){
   .home .reveal,.js .reveal .split .wi,.js .cine .split .wi,.js .cine-copy{transform:none;translate:none;opacity:1}
   .home .hero-media,.home .hero h1.split .wi,.cine-media,.cine-media img{animation:none}
@@ -1678,6 +1708,8 @@ img.ld-in{transition:opacity .6s var(--ease-out)}
   .home .hero .wrap,.home .proj-grid .proj,.home .steps::before{animation:none}
   .tilt.tilting{transform:none}
   .scrub .sw{opacity:1}
+  .js .home .careers.reveal .im{clip-path:none}
+  .home .svc{position:relative}
   img.ld{opacity:1}
   .qx .field,.qx .qx-multi,.qx .chips > *{animation:none}
   .sheen{display:none}

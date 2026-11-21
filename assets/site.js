@@ -1870,3 +1870,50 @@ function svcFallbackAnchor(doc) {
   addEventListener('resize', measure, { passive: true });
   measure();
 })();
+
+/* ==========================================================================
+   Motion v5 (2026-11): pace-aware fade-ins, stacked service cards, a logo
+   wall that ripples out from its centre.
+   ========================================================================== */
+(function motion5() {
+  var doc = document, root = doc.documentElement;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  if (REDUCED.matches || !doc.body.classList.contains('home')) return;
+
+  /* fade-ins run short while the visitor is flicking through, so nothing
+     is still invisible when they stop; full length when they read */
+  var lastY = scrollY, lastT = performance.now(), fast = false, calm;
+  addEventListener('scroll', function () {
+    var t = performance.now(), v = Math.abs(scrollY - lastY) / Math.max(t - lastT, 1);
+    lastY = scrollY; lastT = t;
+    if (v > 2.2 && !fast) { fast = true; root.style.setProperty('--rd', '.35s'); }
+    clearTimeout(calm);
+    calm = setTimeout(function () { fast = false; root.style.removeProperty('--rd'); }, 260);
+  }, { passive: true });
+
+  /* service cards: each one stacks a little lower than the one before */
+  [].slice.call(doc.querySelectorAll('.svc-grid .svc')).forEach(function (c, i) {
+    c.style.setProperty('--k', Math.min(i, 9));
+  });
+
+  /* client wall: delay grows with distance from the wall's centre */
+  var cells = [].slice.call(doc.querySelectorAll('.logo-wall .cell'));
+  if (cells.length) {
+    var place = function () {
+      if (innerWidth < 821) { cells.forEach(function (c) { c.style.removeProperty('--rip'); }); return; }
+      var boxes = cells.map(function (c) { return c.getBoundingClientRect(); });
+      var cx = 0, cy = 0;
+      boxes.forEach(function (b) { cx += b.left + b.width / 2; cy += b.top + b.height / 2; });
+      cx /= boxes.length; cy /= boxes.length;
+      var far = 1;
+      var d = boxes.map(function (b) {
+        var x = b.left + b.width / 2 - cx, y = b.top + b.height / 2 - cy, r = Math.sqrt(x * x + y * y);
+        if (r > far) far = r;
+        return r;
+      });
+      cells.forEach(function (c, i) { c.style.setProperty('--rip', Math.round(d[i] / far * 520) + 'ms'); });
+    };
+    place();
+    addEventListener('resize', place, { passive: true });
+  }
+})();
