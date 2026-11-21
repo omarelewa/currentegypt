@@ -2054,7 +2054,8 @@ function svcFallbackAnchor(doc) {
     if (!label || label.length > 30) return;
     if (!h.id) h.id = 'sec-' + (items.length + 1);
     h.classList.add('jump-target');
-    items.push({ h: h, label: label });
+    var bio = h.closest('.bio'), face = bio && bio.querySelector('.ph img');
+    items.push({ h: h, label: label, face: face });
   });
   if (items.length < 3) return;
 
@@ -2067,6 +2068,7 @@ function svcFallbackAnchor(doc) {
   items.forEach(function (it) {
     var a = doc.createElement('a');
     a.href = '#' + it.h.id; a.textContent = it.label;
+    if (it.face) { var f = doc.createElement('img'); f.className = 'jf'; f.alt = ''; f.src = it.face.currentSrc || it.face.src; f.loading = 'lazy'; a.insertBefore(f, a.firstChild); a.classList.add('has-face'); }
     it.a = a; track.appendChild(a);
   });
   wrap.appendChild(track); nav.appendChild(wrap);
@@ -2102,7 +2104,7 @@ function svcFallbackAnchor(doc) {
   var spy = function () {
     q = false;
     var line = innerHeight * 0.35, pick = null;
-    items.forEach(function (it) { if (it.h.getBoundingClientRect().top < line) pick = it; });
+    items.forEach(function (it) { if ((it.h.closest('.bio') || it.h).getBoundingClientRect().top < line) pick = it; });
     mark(pick);
   };
   addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(spy); } }, { passive: true });
@@ -2219,4 +2221,72 @@ function svcFallbackAnchor(doc) {
       upd();
     }
   }
+})();
+
+/* ==========================================================================
+   About, the journey (2026-11): a line fills as you read down the years,
+   each milestone lights as the line reaches it, and on desktop a large
+   year beside the list changes as you pass each date.
+   ========================================================================== */
+(function journey() {
+  var doc = document, jtl = doc.querySelector('.jtl');
+  if (!jtl) return;
+  var items = [].slice.call(jtl.querySelectorAll('.jt'));
+  if (items.length < 3) return;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  var list = doc.createElement('div');
+  list.className = 'jt-list';
+  items.forEach(function (it) { list.appendChild(it); });
+  var now = doc.createElement('div');
+  now.className = 'jt-now';
+  now.setAttribute('aria-hidden', 'true');
+  now.innerHTML = '<span class="jt-now-y"></span><span class="jt-now-k"></span>';
+  jtl.appendChild(now); jtl.appendChild(list);
+  jtl.classList.add('jtl-v');
+  var yEl = now.firstChild, kEl = now.lastChild, cur = -2;
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  var show = function (i) {
+    if (i === cur) return;
+    cur = i;
+    var k = Math.max(i, 0);
+    items.forEach(function (it, j) { it.classList.toggle('on', j <= i); it.classList.toggle('cur', j === i); });
+    yEl.textContent = (items[k].querySelector('.yr') || {}).textContent || '';
+    kEl.textContent = pad(k + 1) + ' / ' + pad(items.length);
+    yEl.classList.remove('flip'); void yEl.offsetWidth; yEl.classList.add('flip');
+  };
+  if (REDUCED.matches) { list.style.setProperty('--p', 1); show(items.length - 1); return; }
+  var q = false;
+  var measure = function () {
+    q = false;
+    var line = innerHeight * 0.55, r = list.getBoundingClientRect();
+    list.style.setProperty('--p', Math.max(0, Math.min(1, (line - r.top) / r.height)).toFixed(4));
+    var a = -1;
+    items.forEach(function (it, j) { if (it.getBoundingClientRect().top + 14 < line) a = j; });
+    show(a);
+  };
+  addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(measure); } }, { passive: true });
+  addEventListener('resize', measure, { passive: true });
+  measure();
+})();
+
+/* ==========================================================================
+   Leadership (2026-11): each portrait becomes a cinematic card with the
+   name and role laid over the photo; the bio eases in beside it.
+   ========================================================================== */
+(function bios() {
+  var doc = document, list = [].slice.call(doc.querySelectorAll('.bio'));
+  if (!list.length) return;
+  list.forEach(function (b, i) {
+    var ph = b.querySelector('.ph'), role = b.querySelector('.role'), h = b.querySelector('h2');
+    if (!ph || !h) return;
+    var cap = doc.createElement('div'); cap.className = 'ph-cap';
+    if (role) cap.appendChild(role);
+    cap.appendChild(h);
+    ph.appendChild(cap);
+    if (h.id) { b.id = h.id; h.removeAttribute('id'); b.classList.add('jump-target'); }
+    var txt = ph.nextElementSibling;
+    if (txt) { txt.classList.add('bio-txt'); [].slice.call(txt.children).forEach(function (c, j) { c.style.setProperty('--bd', (120 + j * 110) + 'ms'); }); }
+    b.classList.add('bio-v');
+    if (i % 2) b.classList.add('bio-flip');
+  });
 })();
