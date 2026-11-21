@@ -216,6 +216,16 @@
 
   /* ---------- projects filter (with View Transitions when available) ---------- */
   var fbtns = doc.querySelectorAll('.fbtn');
+  /* each chip carries how many projects it holds; the plain label is kept
+     for the count line and the sector diagram */
+  fbtns.forEach(function (b) {
+    var had = b.querySelector('.fn');
+    b.dataset.label = (had ? b.firstChild.textContent : b.textContent).trim();
+    if (had) return;
+    var n = b.dataset.f === 'all' ? doc.querySelectorAll('#pgrid .proj').length
+                                  : doc.querySelectorAll('#pgrid .proj[data-cat="' + b.dataset.f + '"]').length;
+    if (n) { var sp = doc.createElement('span'); sp.className = 'fn'; sp.setAttribute('aria-hidden', 'true'); sp.textContent = n; b.appendChild(sp); }
+  });
   /* after every filter: the first card showing becomes the wide feature,
      and the live count says how many are showing */
   var pgrid = doc.getElementById('pgrid'), pcount = null;
@@ -242,24 +252,38 @@
       }
     });
     var act = doc.querySelector('.fbtn.active');
-    var label = act && act.dataset.f !== 'all' ? ' · ' + act.textContent.trim() : '';
+    var label = act && act.dataset.f !== 'all' ? ' · ' + (act.dataset.label || act.textContent.trim()) : '';
     pcount.textContent = (AR ? 'عرض ' + shown.length + ' من ' + all.length + ' مشروعًا'
                              : 'Showing ' + shown.length + ' of ' + all.length + ' projects') + label;
   };
   pgridSync();
+  var fitChips = function (b) {
+    var row = b.parentNode;
+    if (row.scrollWidth > row.clientWidth + 2) {
+      var x = b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2;
+      row.scrollTo({ left: x, behavior: REDUCED.matches ? 'auto' : 'smooth' });
+    }
+    if (getComputedStyle(row).position !== 'sticky' || !pcount) return;
+    /* moving up brings the header back, so leave room for it as well */
+    var h = doc.querySelector('.hdr'), stuck = (h ? h.offsetHeight : 0) + row.offsetHeight;
+    var top = pcount.getBoundingClientRect().top;
+    if (top < stuck) scrollTo({ top: scrollY + top - stuck - 4, behavior: 'instant' });
+  };
   if (fbtns.length) {
     fbtns.forEach(function (b) {
+      b.setAttribute('aria-pressed', b.classList.contains('active'));
       b.onclick = function () {
         var apply = function () {
-          fbtns.forEach(function (x) { x.classList.remove('active'); });
-          b.classList.add('active');
+          fbtns.forEach(function (x) { x.classList.remove('active'); x.setAttribute('aria-pressed', 'false'); });
+          b.classList.add('active'); b.setAttribute('aria-pressed', 'true');
           var f = b.dataset.f;
           doc.querySelectorAll('#pgrid .proj').forEach(function (p) {
             p.classList.toggle('hide', f !== 'all' && p.dataset.cat !== f);
           });
           pgridSync();
+          fitChips(b);
         };
-        if (doc.startViewTransition && !REDUCED.matches) doc.startViewTransition(apply);
+        if (doc.startViewTransition && !REDUCED.matches) doc.startViewTransition(apply).ready.catch(function () {});
         else apply();
       };
     });
@@ -336,11 +360,15 @@
       /* applied directly, not via click: a View Transition started during
          page load can be skipped, which left the grid unfiltered */
       if (fb) {
-        fbtns.forEach(function (x) { x.classList.toggle('active', x === fb); });
+        fbtns.forEach(function (x) { x.classList.toggle('active', x === fb); x.setAttribute('aria-pressed', x === fb); });
         doc.querySelectorAll('#pgrid .proj').forEach(function (p) {
           p.classList.toggle('hide', p.dataset.cat !== fb.dataset.f);
         });
         pgridSync();
+        requestAnimationFrame(function () {
+          var row = fb.parentNode;
+          if (row.scrollWidth > row.clientWidth + 2) row.scrollLeft = fb.offsetLeft - (row.clientWidth - fb.offsetWidth) / 2;
+        });
       }
     }
   } catch (err) { /* no URLSearchParams: show all */ }
@@ -798,7 +826,8 @@
      disagree with the chips directly above it. */
   function portfolio() {
     var grid = doc.getElementById('pgrid');
-    if (!grid) return;
+    /* the chips now carry their own counts, which says the same thing */
+    if (!grid || doc.querySelector('.fbtn .fn')) return;
     var cards = [].slice.call(grid.querySelectorAll('.proj[data-cat]'));
     if (cards.length < 4) return;
 
@@ -807,7 +836,7 @@
       var key = b.getAttribute('data-f');
       if (key === 'all') return;
       var n = cards.filter(function (c) { return c.getAttribute('data-cat') === key; }).length;
-      if (n > 0) rows.push({ label: (b.textContent || '').trim(), n: n });
+      if (n > 0) rows.push({ label: b.dataset.label || (b.textContent || '').trim(), n: n });
     });
     if (rows.length < 2) return;
 
@@ -2085,13 +2114,6 @@ function svcFallbackAnchor(doc) {
 
   /* stay under the header, and take its place while it steps aside */
   var hdr = doc.getElementById('hdr') || doc.querySelector('.hdr');
-  var setH = function () { if (hdr) doc.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight + 'px'); };
-  setH(); addEventListener('resize', setH, { passive: true });
-  if (hdr && window.MutationObserver) {
-    new MutationObserver(function () {
-      doc.documentElement.classList.toggle('hdr-off', hdr.classList.contains('hdr-hide'));
-    }).observe(hdr, { attributes: true, attributeFilter: ['class'] });
-  }
 
   /* the chip for the section being read fills in, and slides into view */
   var current = null;
@@ -2351,4 +2373,101 @@ function svcFallbackAnchor(doc) {
   addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(measure); } }, { passive: true });
   addEventListener('resize', measure, { passive: true });
   measure();
+})();
+
+
+/* Header height and hidden state, for anything held under the header
+   (jump chips, the projects filter row) */
+(function () {
+  var doc = document, hdr = doc.querySelector('.hdr');
+  if (!hdr) return;
+  var setH = function () { doc.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight + 'px'); };
+  setH(); addEventListener('resize', setH, { passive: true });
+  if (window.MutationObserver) {
+    new MutationObserver(function () {
+      doc.documentElement.classList.toggle('hdr-off', hdr.classList.contains('hdr-hide'));
+    }).observe(hdr, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+
+/* Map site list (2026-11): on a phone the city-by-city list under the map
+   repeats the grid above, so it folds behind one button. Desktop keeps it
+   open; the button is hidden there by CSS. */
+(function () {
+  var list = document.querySelector('.mapband .map-list');
+  if (!list) return;
+  var ar = document.documentElement.lang === 'ar';
+  var n = list.querySelectorAll('a[href]').length;
+  var panel = document.createElement('div');
+  panel.className = 'ml-panel';
+  panel.id = 'ml-panel';
+  list.parentNode.insertBefore(panel, list);
+  panel.appendChild(list);
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'ml-toggle';
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-controls', 'ml-panel');
+  btn.innerHTML = '<span></span><i aria-hidden="true"></i>';
+  btn.firstChild.textContent = ar ? 'كل المواقع حسب المدينة (' + n + ')' : 'List all ' + n + ' sites by city';
+  panel.parentNode.insertBefore(btn, panel);
+  btn.addEventListener('click', function () {
+    var open = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  });
+})();
+
+/* ==========================================================================
+   Photo morph (2026-11): tapping a card whose photo leads to a project or
+   service page grows that photo into the page's masthead. Only the photo
+   you tapped is named for the hand-over; everything else cross-fades.
+   ========================================================================== */
+(function () {
+  if (!('onpageswap' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var last = null;
+  document.addEventListener('click', function (e) {
+    last = e.target.closest && e.target.closest('a[href]');
+  }, true);
+  addEventListener('pageswap', function (e) {
+    if (!e.viewTransition) return;
+    /* cards that glide when the filter changes must not linger as their own layers */
+    [].forEach.call(document.querySelectorAll('[style*="view-transition-name"]'), function (el) {
+      el.style.viewTransitionName = '';
+    });
+    var mine = document.querySelector('.page-hero.photo .ph-media');
+    if (mine) mine.style.viewTransitionName = 'none';
+    var to = e.activation && e.activation.entry && e.activation.entry.url;
+    if (!to || !last || last.href.split('#')[0] !== to.split('#')[0]) return;
+    if (!/\/(project|service)-[\w-]+\.html$/.test(new URL(to).pathname)) return;
+    var im = last.querySelector('img');
+    if (!im) return;
+    var r = im.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    im.style.viewTransitionName = 'hero-photo';
+  });
+})();
+
+/* ==========================================================================
+   Reading progress (2026-11): a hairline at the very top of a project
+   page fills as you read down to the next project.
+   ========================================================================== */
+(function () {
+  var end = document.querySelector('.next-proj');
+  if (!end || !document.querySelector('.page-hero.photo')) return;
+  var bar = document.createElement('div');
+  bar.className = 'readbar';
+  bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+  document.documentElement.classList.add('has-readbar');
+  var q = false;
+  var draw = function () {
+    q = false;
+    var stop = end.getBoundingClientRect().top + scrollY - innerHeight;
+    var p = stop > 0 ? Math.min(1, Math.max(0, scrollY / stop)) : 1;
+    bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+    bar.classList.toggle('on', scrollY > 40);
+  };
+  addEventListener('scroll', function () { if (!q) { q = true; requestAnimationFrame(draw); } }, { passive: true });
+  addEventListener('resize', draw, { passive: true });
+  draw();
 })();
